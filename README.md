@@ -1,1 +1,1 @@
-# Blue-EasyVolunteer
+# EasyVolunteer
