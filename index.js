@@ -1,5 +1,7 @@
 const express = require("express");
 const mysql = require("mysql");
+const bodyParser = require('body-parser');
+const path = require('path');
 const app = express();
 
 
@@ -10,6 +12,9 @@ const connection = mysql.createConnection({
   database: "CS394",
   port: 3306
 });
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'easy-volunteer/build')));
 
 
 app.post('/userSubmit', (req, res) => {
@@ -23,7 +28,6 @@ app.post('/userSubmit', (req, res) => {
   // req.body.calendar is a 2D array indexed by date and time
   let calendar = req.body.calendar;
 
-
   // gets the total number of days and timeslots from the calendar
   let totalDays = calendar.length;
   let totalTimes = calendar[0].length;
@@ -35,7 +39,7 @@ app.post('/userSubmit', (req, res) => {
       for (let ii = 0; ii<totalDays; ii++) {
         for (let jj = 0; jj<totalTimes; jj++) {
           if (calendar[ii][jj]) {
-            connection.query(userBlockQuery, [res.body.eventID, ii, jj, result], (error, result2) => {
+            connection.query(userBlockQuery, [req.body.eventID, ii, jj, result], (error, result2) => {
               if (error) res.sendStatus(500);
             });
           }
@@ -43,7 +47,6 @@ app.post('/userSubmit', (req, res) => {
       }
     }
   });
-  
   connection.query(userInfoQuery, [req.body.name, req.body.phone, req.body.email], (error, result) => {
     if (error) res.sendStatus(500);
     else res.sendStatus(200);
@@ -53,26 +56,25 @@ app.post('/userSubmit', (req, res) => {
 // getCalendar: Returns all occupied time slots for an event
 app.get('/getCalendar/:id', (req, res) => {
   // SQL Query to obtain every row related to a specific event ID
-  let sql = "SELECT * FROM events WHERE eventID = ?"
+  let sql = "SELECT * FROM block WHERE eventID = ?"
   connection.query(sql, [req.params.id], (error, result) => {
     // If it fucks up, return error code 500
     if (error) res.sendStatus(500);
     else {
-      // Initialize empty 2d array of 31 days x 24 hours of 0's
+      // Initialize empty 2d array of 7 days x 5 hours of 0's
       // sets up the array for adding actual days/times for filled timeslots
-      var calendarInfo = [[]];
-      for (i = 0; i < 31; i++) {
-        for (j = 0; j < 24; j++) {
-          calendarInfo[i].push(0)
+      var calendarInfo = [];
+      for (i = 0; i < 7; i++) {
+        calendarInfo.push([]);
+        for (j = 0; j < 5; j++) {
+          calendarInfo[i].push(0);
         }
-        calendarInfo.push([])
-      }
 
+      }
       // For each eventID-related row, fill calendarInfo with the legitimately filled timeslots
       for (i = 0; i < result.length; i++) {
-        calendarInfo[result[i][dayIndex], result[i][timeIndex]] = result[i][volunteerID]
+        calendarInfo[result[i]["dayIndex"]][result[i]["timeIndex"]] = result[i]["volunteerID"]
       }
-
       // Return calendarInfo
       res.json({calendar : calendarInfo});
     }
@@ -133,9 +135,11 @@ app.get('/getVolunteerEmail/:volunteerID', (req, res) => {
   });
 });
 
-// app.all('/*', (req, res) => {
-//   res.sendFile('./easy-volunteer/build/index.html', { root: __dirname });
-// });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + 'easy-volunteer/build/index.html'));
+});
 
-app.set('port', 4200);
-app.listen(4200, () => console.log(`Example app listening on port 4200!`))
+const port = process.env.PORT || 4200;
+
+app.listen(port);
+console.log(`Example app listening on port 4200!`);
