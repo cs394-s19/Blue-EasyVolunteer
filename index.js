@@ -50,11 +50,11 @@ app.get('/getCalendar/:id', (req, res) => {
   });
 });
 
-// Gets the volunteer name from the volunteer table
+// getVolunteerName - Gets the volunteer name from the volunteer table
 app.get('/getVolunteerName/:volunteerID', (req, res) => {
   // SQL statement for getting volunteer name
   let sql = "SELECT volunteerName FROM volunteer WHERE volunteerID = ?;"
-  // Query for volunteerID
+  // Query for name by volunteerID
   connection.query(sql, [req.params.volunteerID], (error, result) => {
     if (error) {
       // If it fucks up, send 500 status code
@@ -64,6 +64,42 @@ app.get('/getVolunteerName/:volunteerID', (req, res) => {
     else {
       // Otherwise send over the volunteer ID
       res.json({volunteerID : result});
+    }
+  });
+});
+
+// getVolunteerPhone - copy of above code but for volunteer's phone number
+app.get('/getVolunteerPhone/:volunteerID', (req, res) => {
+  // SQL statement for getting volunteer name
+  let sql = "SELECT phone FROM volunteer WHERE volunteerID = ?;"
+  // Query for phone by volunteerID
+  connection.query(sql, [req.params.volunteerID], (error, result) => {
+    if (error) {
+      // If it fucks up, send 500 status code
+      console.log(error)
+      res.sendStatus(500);
+    }
+    else {
+      // Otherwise send over the volunteer ID
+      res.json({phone : result});
+    }
+  });
+});
+
+// getVolunteerEmail - copy of above code but for volunteer's email
+app.get('/getVolunteerEmail/:volunteerID', (req, res) => {
+  // SQL statement for getting volunteer name
+  let sql = "SELECT email FROM volunteer WHERE volunteerID = ?;"
+  // Query for phone by volunteerID
+  connection.query(sql, [req.params.volunteerID], (error, result) => {
+    if (error) {
+      // If it fucks up, send 500 status code
+      console.log(error)
+      res.sendStatus(500);
+    }
+    else {
+      // Otherwise send over the volunteer ID
+      res.json({email : result});
     }
   });
 });
