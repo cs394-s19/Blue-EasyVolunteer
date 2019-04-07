@@ -1,0 +1,24 @@
+{
+  "name": "blue-easyvolunteer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd easy-volunteer && npm run-script build && cd .. && node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cs394-s19/Blue-EasyVolunteer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cs394-s19/Blue-EasyVolunteer/issues"
+  },
+  "homepage": "https://github.com/cs394-s19/Blue-EasyVolunteer#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "mysql": "^2.16.0"
+  }
+}
