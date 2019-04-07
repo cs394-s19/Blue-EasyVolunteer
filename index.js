@@ -31,16 +31,19 @@ app.get('/getCalendar/:id', (req, res) => {
   });
 });
 
+// Gets the volunteer name from the volunteer table 
 app.get('/getVolunteerName/:volunteerID', (req, res) => {
+  // SQL statement for getting volunteer name
   let sql = "SELECT volunteerName from volunteer where volunteerID = ?;"
-  console.log("sd")
-  console.log(req.params.volunteerID)
+  // Query for volunteerID
   connection.query(sql, [req.params.volunteerID], (error, result) => {
     if (error) {
+      // If it fucks up, send 500 status code
       console.log(error)
       res.sendStatus(500);
     }
     else {
+      // Otherwise send over the volunteer ID
       res.json({volunteerID : result});
     }
   });
