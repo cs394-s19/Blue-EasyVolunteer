@@ -94,7 +94,7 @@ app.get('/getVolunteerName/:volunteerID', (req, res) => {
     }
     else {
       // Otherwise send over the volunteer ID
-      res.json({volunteerID : result});
+      res.json({volunteerName : result});
     }
   });
 });
@@ -112,7 +112,7 @@ app.get('/getVolunteerPhone/:volunteerID', (req, res) => {
     }
     else {
       // Otherwise send over the volunteer ID
-      res.json({phone : result});
+      res.json({volunteerPhone : result});
     }
   });
 });
@@ -130,7 +130,7 @@ app.get('/getVolunteerEmail/:volunteerID', (req, res) => {
     }
     else {
       // Otherwise send over the volunteer ID
-      res.json({email : result});
+      res.json({volunteerEmail : result});
     }
   });
 });
