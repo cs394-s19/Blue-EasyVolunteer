@@ -1,44 +1,73 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import './App.css';
 
-const days = [
-  ["M",false,"false"],
-  ["Tu",true,"James"],
-  ["W",false,"false"],
-  ["Th",false,"false"],
-  ["F",false,"false"]]; //we'd figure out how to get this from backend
+//load calendar
+loadCalendar();
+let testCalendarObject = [
+  [0], //day 0 - monday
+  [1],
+  [0],
+  [2],
+  [0]
+];
 
-let calendarObject;
-var xmlhttp = new XMLHttpRequest();
-var url = "https://www.w3schools.com/js/myTutorials.txt";
+let globalCalendar;
 
-xmlhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-        console.log(this.responseText);
-    }
-};
-xmlhttp.open("GET", url, true);
-xmlhttp.send();
+function loadCalendar() {
+  //pull calendar from database and put to globalCalendar
+}
 
-let loggedIn = false;
-let username;
+function schedule(inName, dayIndex) {
+
+}
+
+function getVolunteerFromID(id) {
+  //to be implemented
+  if(id === 1){
+    return "Joseph";
+  }
+  else if (id === 2){
+    return "Paul";
+  }
+  else if (id === 0){
+    return "";
+  }
+  return "Other";
+} 
+
+let username = "";
 
 const Day = ({day, busy, name}) => {
-  let origName = (name === "false") ? "" : name;
+  let originalName = name;
   const [busySetting, setBusySetting] = React.useState(String(busy));
-  const [nome, setNome] = React.useState(origName);
+  const [dynamicName, setDynamicName] = React.useState(originalName);
   function handleDayClick () {
-    if ((busy == true) && (name === origName)) {return;}
-    if (username === "") {return;}
-    busy = !busy;
-    if(busy == true){
-      name = username;
+    if(busySetting === "false"){ //if not busy
+      if(username === ""){ //if not logged in
+        alert("You are not logged in!");
+        return;
+      }
+      else { //if logged in
+        setDynamicName(username);
+        busy = !busy;
+        setBusySetting(String(busy));
+      }
+    } else { //if busy
+      if(username === ""){
+        return;
+      } 
+      else {
+        if(dynamicName === username){
+          busy = !busy;
+          setBusySetting(String(busy));
+          if (busy === false){
+            setDynamicName("");
+          }
+        } else {
+          return;
+        }
+      }
     }
-    else {
-      name = origName;
-    }
-    setNome(name);
-    setBusySetting(String(busy));
   }
   return (
    <table className="day"><tbody>
@@ -46,39 +75,47 @@ const Day = ({day, busy, name}) => {
       <th className="day-header">{day}</th>
     </tr>
     <tr>
-      <td onClick={handleDayClick} className={busySetting}>{nome}</td>
+      <td onClick={handleDayClick} className={busySetting}>{dynamicName}</td>
     </tr>
     </tbody>
   </table>
   );
 }
 
-const Calendar = ({DaysArray}) => (
+function inferBusy(id) {
+  return (id !== 0) ? true : false; 
+}
+
+const Calendar = () => (
   <table className="calendar">
     <tbody>
     <tr>
-      <th><Day day={DaysArray[0][0]} busy={DaysArray[0][1]} name={DaysArray[0][2]}></Day></th>
-      <th><Day day={DaysArray[1][0]} busy={DaysArray[1][1]} name={DaysArray[1][2]}></Day></th>
-      <th><Day day={DaysArray[2][0]} busy={DaysArray[2][1]} name={DaysArray[2][2]}></Day></th>
-      <th><Day day={DaysArray[3][0]} busy={DaysArray[3][1]} name={DaysArray[3][2]}></Day></th>
-      <th><Day day={DaysArray[4][0]} busy={DaysArray[4][1]} name={DaysArray[4][2]}></Day></th>
+      <th><Day day="M" busy={inferBusy(testCalendarObject[0][0])} name={getVolunteerFromID(testCalendarObject[0][0])}></Day></th>
+      <th><Day day="Tu" busy={inferBusy(testCalendarObject[1][0])} name={getVolunteerFromID(testCalendarObject[1][0])}></Day></th>
+      <th><Day day="W" busy={inferBusy(testCalendarObject[2][0])} name={getVolunteerFromID(testCalendarObject[2][0])}></Day></th>
+      <th><Day day="Th" busy={inferBusy(testCalendarObject[3][0])} name={getVolunteerFromID(testCalendarObject[3][0])}></Day></th>
+      <th><Day day="F" busy={inferBusy(testCalendarObject[4][0])} name={getVolunteerFromID(testCalendarObject[4][0])}></Day></th>
     </tr>
     </tbody>
   </table>
 );
 
-
-
 const Login = () => {
-  const [nome, setNome] = React.useState(username);
-
+  const [name, setName] = React.useState(username);
+  function handleLogin() {
+    if (document.getElementById("login").value === ""){
+      return;
+    }
+    username = document.getElementById("login").value;
+    setName(document.getElementById("login").value);
+  }
   return (
     <div>
       <form>
         <input id="login" type="text" placeholder="Login here..." /><br />
-        <button onClick={() => {setNome(document.getElementById("login").value); localStorage.setItem("easyVolunteerName",document.getElementById("login").value); username = document.getElementById("login").value;}} type="button">Login</button>
+        <button onClick={handleLogin} type="button">Login</button>
       </form>
-      <LoginInfo name={nome}/>
+      <LoginInfo name={name}/>
     </div>
   );
 }
@@ -91,10 +128,6 @@ const LoginInfo = ({name}) => ( ((name !== "") && (name != null)) ?
 );
 
 const App = () => {
-    loggedIn = localStorage.getItem("easyVolunteerLoggedIn");
-    if(loggedIn === "true") {
-      username = localStorage.getItem("easyVolunteerName");
-    }
     return (
       <center>
       <br /><br />
@@ -108,7 +141,7 @@ const App = () => {
               <Login />
             </div>
           </th>
-          <th className="right-sidebar"><Calendar className="calendar" DaysArray={days}/></th>
+          <th className="right-sidebar"><Calendar className="calendar" /></th>
         </tr>
       </tbody>
       </table>
