@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql");
 const bodyParser = require('body-parser');
 const path = require('path');
+const cors = require('cors');
 const app = express();
 
 
@@ -13,11 +14,22 @@ const connection = mysql.createConnection({
   port: 3306
 });
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'easy-volunteer/build')));
+app.use(cors());
+// var allowCrossDomain = function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*"); // allow requests from any other server
+//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE'); // allow these verbs
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cache-Control");
+// }
+
+// app.use(allowCrossDomain); // plumbing it in as middleware
 
 
-app.post('/userSubmit', (req, res) => {
+
+app.post('/newUser', (req, res) => {
+  console.log(req.body);
   // inserts basic info for the volunteer.
   let userInfoQuery = "INSERT INTO volunteer (volunteerName, phone, email) VALUES (?, ?, ?)";
 
@@ -29,8 +41,8 @@ app.post('/userSubmit', (req, res) => {
   let calendar = req.body.calendar;
 
   // gets the total number of days and timeslots from the calendar
-  let totalDays = calendar.length;
-  let totalTimes = calendar[0].length;
+  let totalDays = req.body.totalDays;
+  let totalTimes = req.body.totalTimes;
 
   // first grabs the userID with the count query, then populates the block table
   connection.query(userIDQuery, [], (error, result) => {
@@ -38,7 +50,7 @@ app.post('/userSubmit', (req, res) => {
     else {
       for (let ii = 0; ii<totalDays; ii++) {
         for (let jj = 0; jj<totalTimes; jj++) {
-          if (calendar[ii][jj]) {
+          if (calendar[ii*totalTimes + jj]) {
             connection.query(userBlockQuery, [req.body.eventID, ii, jj, result], (error, result2) => {
               if (error) res.sendStatus(500);
             });
@@ -47,11 +59,13 @@ app.post('/userSubmit', (req, res) => {
       }
     }
   });
+
   connection.query(userInfoQuery, [req.body.name, req.body.phone, req.body.email], (error, result) => {
     if (error) res.sendStatus(500);
     else res.sendStatus(200);
   });
 });
+
 
 // getCalendar: Returns all occupied time slots for an event
 app.get('/getCalendar/:id', (req, res) => {
@@ -86,6 +100,7 @@ app.get('/getVolunteerName/:volunteerID', (req, res) => {
   // SQL statement for getting volunteer name
   let sql = "SELECT volunteerName FROM volunteer WHERE volunteerID = ?;"
   // Query for name by volunteerID
+  console.log(req.params);
   connection.query(sql, [req.params.volunteerID], (error, result) => {
     if (error) {
       // If it fucks up, send 500 status code
@@ -94,11 +109,11 @@ app.get('/getVolunteerName/:volunteerID', (req, res) => {
     }
     else {
       // Otherwise send over the volunteer ID
+      console.log(result);
       res.json({volunteerName : result});
     }
   });
 });
-
 // getVolunteerPhone - copy of above code but for volunteer's phone number
 app.get('/getVolunteerPhone/:volunteerID', (req, res) => {
   // SQL statement for getting volunteer name
@@ -136,7 +151,7 @@ app.get('/getVolunteerEmail/:volunteerID', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + 'easy-volunteer/build/index.html'));
+  res.sendFile(path.join(__dirname + '/easy-volunteer/build/index.html'));
 });
 
 const port = process.env.PORT || 4200;

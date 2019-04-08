@@ -1,24 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import './App.css';
 
+const axios = require('axios');
+
 const days = [
   ["M",false,"false"],
   ["Tu",true,"James"],
   ["W",false,"false"],
   ["Th",false,"false"],
   ["F",false,"false"]]; //we'd figure out how to get this from backend
-
-let calendarObject;
-var xmlhttp = new XMLHttpRequest();
-var url = "https://www.w3schools.com/js/myTutorials.txt";
-
-xmlhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-        console.log(this.responseText);
-    }
-};
-xmlhttp.open("GET", url, true);
-xmlhttp.send();
 
 let loggedIn = false;
 let username;
@@ -39,6 +29,54 @@ const Day = ({day, busy, name}) => {
     }
     setNome(name);
     setBusySetting(String(busy));
+    console.log("calling axios");
+    axios.get('http://localhost:4200/getCalendar/1', {
+      headers: {
+        'Content-type': 'application/json; charset=utf-8',
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
+      .then(function (response) {
+        // handle success
+        console.log(response.data.calendar); // the 2d calendar array, each value is a volunteerID
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+        console.log("continuing");
+      });
+    
+    console.log("post");
+    axios.post('http://localhost:4200/userSubmit', {
+      body: {
+        name: 'Fred',
+        phone: '328',
+        email: "danny@u.com",
+        calendar: [false, false, true, true, false, false],
+        eventID: 2,
+        totalDays: 5,
+        totalTimes: 7
+      },
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded'
+      }
+      
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    
+    
+
+    
+
+
   }
   return (
    <table className="day"><tbody>
@@ -118,4 +156,3 @@ const App = () => {
 }
 
 export default App;
-
