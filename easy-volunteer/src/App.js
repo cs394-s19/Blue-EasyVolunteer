@@ -8,6 +8,18 @@ const days = [
   ["Th",false,"false"],
   ["F",false,"false"]]; //we'd figure out how to get this from backend
 
+let calendarObject;
+var xmlhttp = new XMLHttpRequest();
+var url = "https://www.w3schools.com/js/myTutorials.txt";
+
+xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        console.log(this.responseText);
+    }
+};
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+
 let loggedIn = false;
 let username;
 
