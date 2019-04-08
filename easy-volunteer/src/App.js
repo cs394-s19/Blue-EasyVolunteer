@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
+const axios = require('axios');
 //load calendar
-let globalCalendar = loadCalendar();
+// let calendar = loadCalendar();
 
-function loadCalendar() {
-  //pull calendar from database and put to globalCalendar
-  //parameters: none
-  //result: 2D calendar from database
-}
+// function loadCalendar() {
+//   //pull calendar from database and put to calendar
+//   //parameters: none
+//   //result: 2D calendar from database
+// }
 
-function schedule(inName, dayIndex, slots) {
-  //name is name, dayIndex is monday/tuesday/wednesday, slots is an array of 
-}
+// function schedule(inName, dayIndex, slots) {
+//   //name is name, dayIndex is monday/tuesday/wednesday, slots is an array of 
+// }
 
 function getDayIndex(id) {
   if (id === "M") {
@@ -32,6 +33,8 @@ function getDayIndex(id) {
 
 function getVolunteerFromID(id) {
   //get volunteer ID, return volunteer name
+  if (id !== 0)
+    return id;
 } 
 
 let username = "";
@@ -40,7 +43,7 @@ const Day = ({day, busy, name}) => {
   let originalName = name;
   const [busySetting, setBusySetting] = React.useState(String(busy));
   const [dynamicName, setDynamicName] = React.useState(originalName);
-  function handleDayClick () {
+  function handleDayClick() {
     if(busySetting === "false"){ //if not busy
       if(username === ""){ //if not logged in
         alert("You are not logged in!");
@@ -50,7 +53,36 @@ const Day = ({day, busy, name}) => {
         setDynamicName(username);
         busy = !busy;
         setBusySetting(String(busy));
-        schedule(username, getDayIndex(day), [0]);
+
+        ////////// start of backend part ////////////////
+        console.log(username);
+        axios.get('http://localhost:4200/getVolunteerID/' + username, {
+          headers: {
+            'Content-type': 'application/json'
+          }
+        })
+        .then( (response) => {
+          axios.post('http://localhost:4200/updateSchedule', {
+            volunteerID: response.data.volunteerID,
+            eventID: 1,
+            times: [true],
+            dayIndex: getDayIndex(day),
+            headers: {
+              'Content-type': 'application/x-www-form-urlencoded'
+            }
+          })
+          .then(function (response) {
+            console.log("database updated");
+          })
+          .catch(function (error) {
+            console.log("error in updateSchedule: " + error);
+          });
+        })
+        .catch ( (error) => {
+          console.log("error in getVolunteerID: " + error);
+        });
+
+        //////////////// end of backend part ////////////////
       }
     } else { //if busy
       if(username === ""){
@@ -63,7 +95,35 @@ const Day = ({day, busy, name}) => {
           if (busy === false){
             setDynamicName("");
           }
-          schedule(username, getDayIndex(day), [0]);
+
+          ////////// start of backend part ////////////////
+          axios.get('http://localhost:4200/getVolunteerID/' + dynamicName, {
+            headers: {
+              'Content-type': 'application/json'
+            }
+          })
+          .then( (response) => {
+            axios.post('http://localhost:4200/ubdateSchdule', {
+              name: response.data.volunteerID,
+              eventID: 1,
+              times: [false],
+              dayIndex: getDayIndex(day),
+              headers: {
+                'Content-type': 'application/x-www-form-urlencoded'
+              }
+            })
+            .then(function (response) {
+              console.log("database updated");
+            })
+            .catch(function (error) {
+              console.log("error in updateSchedule: " + error);
+            });
+          })
+          .catch ( (error) => {
+            console.log("error in getVolunteerID: " + error);
+          });
+
+          //////////////// end of backend part ////////////////
         } else {
           return;
         }
@@ -87,19 +147,63 @@ function inferBusy(id) {
   return (id !== 0) ? true : false; 
 }
 
-const Calendar = () => (
+const Calendar = () => {
+  let initialCalendar = [[0],[0],[0],[0],[0]];
+  const [calendar, setCalendar] = useState(initialCalendar);
+
+  //////// backend route ////////////////////////
+  useEffect(() => {
+    axios.get('http://localhost:4200/getCalendar/1', {
+      headers: {
+        'Content-type': 'application/json; charset=utf-8'
+      }
+    })
+      .then( (response) => {
+        // handle success
+        console.log(response.data.calendar); // the 2d calendar array, each value is a volunteerID
+        // setCalendar(response.data.calendar);
+        let newCalendar = response.data.calendar;
+        for (let ii = 0; ii < newCalendar.length; ii++){
+          for (let jj = 0; jj < newCalendar[0].length; jj++) {
+            if (newCalendar[ii][jj] !== 0){
+              axios.get('http://localhost:4200/getVolunteerName/' + newCalendar[ii][jj], {
+                headers: {
+                  'Content-type': 'application/json; charset=utf-8'
+                }
+              })
+              .then( (response) => {
+                newCalendar[ii][jj] = response.data.volunteerName;
+                setCalendar(newCalendar);
+                console.log(newCalendar);
+              })
+              .catch( (error) => {
+                console.log("error in getVolunteerName: " + error);
+              })
+            }
+          }
+        }
+      })
+      .catch(function (error) {
+        // handle error
+        console.log("error in getCalendar" + error);
+      });
+  }, []);
+
+  /////////////////// end back-end route ///////////////////////////
+  return (
   <table className="calendar">
     <tbody>
     <tr>
-      <th><Day day="M" busy={inferBusy(globalCalendar[0][0])} name={getVolunteerFromID(globalCalendar[0][0])}></Day></th>
-      <th><Day day="Tu" busy={inferBusy(globalCalendar[1][0])} name={getVolunteerFromID(globalCalendar[1][0])}></Day></th>
-      <th><Day day="W" busy={inferBusy(globalCalendar[2][0])} name={getVolunteerFromID(globalCalendar[2][0])}></Day></th>
-      <th><Day day="Th" busy={inferBusy(globalCalendar[3][0])} name={getVolunteerFromID(globalCalendar[3][0])}></Day></th>
-      <th><Day day="F" busy={inferBusy(globalCalendar[4][0])} name={getVolunteerFromID(globalCalendar[4][0])}></Day></th>
+      <th><Day day="M" busy={inferBusy(calendar[0][0])} name={getVolunteerFromID(calendar[0][0])}></Day></th>
+      <th><Day day="Tu" busy={inferBusy(calendar[1][0])} name={getVolunteerFromID(calendar[1][0])}></Day></th>
+      <th><Day day="W" busy={inferBusy(calendar[2][0])} name={getVolunteerFromID(calendar[2][0])}></Day></th>
+      <th><Day day="Th" busy={inferBusy(calendar[3][0])} name={getVolunteerFromID(calendar[3][0])}></Day></th>
+      <th><Day day="F" busy={inferBusy(calendar[4][0])} name={getVolunteerFromID(calendar[4][0])}></Day></th>
     </tr>
     </tbody>
   </table>
-);
+  )
+};
 
 const Login = () => {
   const [name, setName] = React.useState(username);
@@ -109,6 +213,18 @@ const Login = () => {
     }
     username = document.getElementById("login").value;
     setName(document.getElementById("login").value);
+    axios.post("http://localhost:4200/newUser", {
+      name: username,
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then( (response) => {
+      console.log("new user: " + username + " added");
+    })
+    .catch( (error) => {
+      console.log("error at newUser " + error);
+    });
   }
   return (
     <div>
