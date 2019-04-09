@@ -27,8 +27,13 @@ th {
 
 }
 
+form {
+  margin-bottom: 2%;
+}
+
 .loginDiv {
   margin-top: 20px;
+
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -38,7 +43,7 @@ th {
 .login {
   margin-right: 10px;
   margin-left: 10px;
-  margin-bottom: 50px;
+  
   font-family: 'Montserrat', sans-serif;
 
 }
@@ -48,8 +53,8 @@ th {
   text-shadow: 5px 5px 10px gray;
   color: steelblue;
   border-bottom: groove;
-  height: 4 0%;
-  width: 40%;
+
+  width: 60%;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -106,7 +111,7 @@ th {
 
 .day-header {
   font-family: 'Montserrat', sans-serif;
-  height: 50px;
+  height: 20px;
 }
 
 .true {
@@ -117,6 +122,7 @@ th {
   border: 2px groove;
   font-family: 'Montserrat', sans-serif;
   color: black;
+  border-radius: 10px;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 
@@ -125,15 +131,35 @@ th {
 }
 
 .false {
-  border-top: groove;
+
   padding: 0px;
   margin: 0px;
   max-width: 10%;
   border: 2px groove;
+  border-radius: 10px;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 
 }
 
 .false:hover{
 	 box-shadow: 0 6px 28px rgba(0,0,0,0.25);
+}
+
+/* for phones */
+@media screen and (max-width: 848px) {
+  .day {
+    width: 80px;
+  }
+  .App {
+    max-width: 90%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .day {
+    width: 50px;
+  }
+  .App {
+    max-width: 90%;
+  }
 }

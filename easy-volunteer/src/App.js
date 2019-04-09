@@ -250,18 +250,19 @@ const Login = () => {
   }
   return (
     <div>
-      <form>
-        <input class="ui huge icon input login" id="login" type="text" placeholder="Login here..." />
+      <form class="form">
+        <input class="ui icon input login" id="login" type="text" placeholder="Login here..." />
         <button class="ui primary button login" onClick={handleLogin} type="button">Login</button>
+        <LoginInfo name={name}/>
       </form>
-      <LoginInfo name={name}/>
+
     </div>
   );
 }
 
 const LoginInfo = ({name}) => ( ((name !== "") && (name != null)) ?
   <p>
-    Signed in as: <br /> {name}
+    Signed in as: {name}
   </p>
   : <p></p>
 );
@@ -282,7 +283,7 @@ const App = () => {
 
         <div className="loginDiv">
           <Login />
-      
+
 
         </div>
 
