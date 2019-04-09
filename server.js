@@ -84,10 +84,15 @@ app.get('/getVolunteerID/:name', (req, res) => {
 // getCalendar: Returns all occupied time slots for an event
 app.get('/getCalendar/:id', (req, res) => {
   // SQL Query to obtain every row related to a specific event ID
-  const sql = "SELECT * FROM block WHERE eventID = ?"
+  const sql = "SELECT volunteerName, dayIndex, timeIndex FROM volunteer natural join block WHERE eventID = ?"
   connection.query(sql, [req.params.id], (error, result) => {
     // If it fucks up, return error code 500
-    if (error) res.sendStatus(500);
+    if (error)
+    {
+      console.log(error);
+      res.sendStatus(500);
+
+    } 
     else {
       // Initialize empty 2d array of 7 days x 5 hours of 0's
       // sets up the array for adding actual days/times for filled timeslots
@@ -101,7 +106,7 @@ app.get('/getCalendar/:id', (req, res) => {
       }
       // For each eventID-related row, fill calendarInfo with the legitimately filled timeslots
       for (i = 0; i < result.length; i++) {
-        calendarInfo[result[i]["dayIndex"]][result[i]["timeIndex"]] = result[i]["volunteerID"]
+        calendarInfo[result[i]["dayIndex"]][result[i]["timeIndex"]] = result[i]["volunteerName"]
       }
       // Return calendarInfo
       res.json({calendar : calendarInfo});
