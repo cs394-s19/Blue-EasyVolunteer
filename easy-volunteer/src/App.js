@@ -63,6 +63,9 @@ const Day = ({day, busy, name}) => {
   {
     if(dynName === 0)
     {
+      if (name === 0){
+        return "";
+      }
       return name;
     }
     else
@@ -84,7 +87,7 @@ const Day = ({day, busy, name}) => {
         setBusySetting(String(busy));
 
         ////////// start of backend part ////////////////
-        console.log(username);
+        //console.log(username);
         axios.get('http://localhost:4200/getVolunteerID/' + username, {
           headers: {
             'Content-type': 'application/json'
@@ -173,7 +176,8 @@ const Day = ({day, busy, name}) => {
 }
 
 function inferBusy(id) {
-  return (id !== 0) ? true : false; 
+  console.log(id);
+  return (id === 0) ? false : true; 
 }
 
 const Calendar = () => {
