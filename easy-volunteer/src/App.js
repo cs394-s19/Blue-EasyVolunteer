@@ -132,8 +132,8 @@ const Day = ({day, busy, name}) => {
             }
           })
           .then( (response) => {
-            axios.post('http://localhost:4200/ubdateSchdule', {
-              name: response.data.volunteerID,
+            axios.post('http://localhost:4200/updateSchedule', {
+              volunteerID: response.data.volunteerID,
               eventID: 1,
               times: [false],
               dayIndex: getDayIndex(day),
