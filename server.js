@@ -84,7 +84,7 @@ app.get('/getVolunteerID/:name', (req, res) => {
 // getCalendar: Returns all occupied time slots for an event
 app.get('/getCalendar/:id', (req, res) => {
   // SQL Query to obtain every row related to a specific event ID
-  let sql = "SELECT * FROM block WHERE eventID = ?"
+  const sql = "SELECT * FROM block WHERE eventID = ?"
   connection.query(sql, [req.params.id], (error, result) => {
     // If it fucks up, return error code 500
     if (error) res.sendStatus(500);
@@ -111,21 +111,37 @@ app.get('/getCalendar/:id', (req, res) => {
 
 // getVolunteerName - Gets the volunteer name from the volunteer table
 app.get('/getVolunteerName/:volunteerID', (req, res) => {
-  // SQL statement for getting volunteer name
+  [error, result] = getVolunteerNameByID(req.params.id)
+  // Query for name by volunteerID
+  if (error) {
+    // If it fucks up, send 500 status code
+    console.log(error)
+    res.sendStatus(500);
+  } else {
+    // Otherwise send over the volunteer ID
+    console.log(result)
+    return result;
+    //res.json({volunteerName : result[0]['volunteerName']});
+  }
+});
+
+function getVolunteerNameByID(id)
+{
   let sql = "SELECT volunteerName FROM volunteer WHERE volunteerID = ?;"
   // Query for name by volunteerID
-  connection.query(sql, [req.params.volunteerID], (error, result) => {
-    if (error) {
-      // If it fucks up, send 500 status code
-      console.log(error)
-      res.sendStatus(500);
-    }
-    else {
-      // Otherwise send over the volunteer ID
-      res.json({volunteerName : result[0]['volunteerName']});
-    }
+  connection.query(sql, [id], (error, result) => {
+    return [error, result];
   });
-});
+}
+
+
+
+
+
+
+
+
+
 // getVolunteerPhone - copy of above code but for volunteer's phone number
 app.get('/getVolunteerPhone/:volunteerID', (req, res) => {
   // SQL statement for getting volunteer name

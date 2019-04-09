@@ -33,6 +33,21 @@ function getDayIndex(id) {
 
 function getVolunteerFromID(id) {
   //get volunteer ID, return volunteer name
+  axios.get('http://localhost:4200/getVolunteerName/' + id, {
+    headers: {
+      'Content-type': 'application/json; charset=utf-8'
+    }
+  })
+  .then( (response) => {
+    return response.data.volunteerName;
+  })
+  .catch( (error) => {
+    console.log("error in getVolunteerName: " + error);
+  })
+
+
+
+
   if (id !== 0)
     return id;
 } 
@@ -40,9 +55,23 @@ function getVolunteerFromID(id) {
 let username = "";
 
 const Day = ({day, busy, name}) => {
-  let originalName = name;
+  const originalName = name;
   const [busySetting, setBusySetting] = React.useState(String(busy));
   const [dynamicName, setDynamicName] = React.useState(originalName);
+
+  function displayName(dynName,name)
+  {
+    if(dynName === 0)
+    {
+      return name;
+    }
+    else
+    {
+      return dynName;
+    }
+  }
+
+
   function handleDayClick() {
     if(busySetting === "false"){ //if not busy
       if(username === ""){ //if not logged in
@@ -89,10 +118,10 @@ const Day = ({day, busy, name}) => {
         return;
       } 
       else {
-        if(dynamicName === username){
+        if (dynamicName === username) {
           busy = !busy;
           setBusySetting(String(busy));
-          if (busy === false){
+          if (busy === false) {
             setDynamicName("");
           }
 
@@ -136,7 +165,7 @@ const Day = ({day, busy, name}) => {
       <th className="day-header">{day}</th>
     </tr>
     <tr>
-      <td onClick={handleDayClick} className={busySetting}>{dynamicName}</td>
+      <td onClick={handleDayClick} className={busySetting}>{displayName(dynamicName,name)}</td>
     </tr>
     </tbody>
   </table>
@@ -161,27 +190,9 @@ const Calendar = () => {
       .then( (response) => {
         // handle success
         console.log(response.data.calendar); // the 2d calendar array, each value is a volunteerID
-        // setCalendar(response.data.calendar);
-        let newCalendar = response.data.calendar;
-        for (let ii = 0; ii < newCalendar.length; ii++){
-          for (let jj = 0; jj < newCalendar[0].length; jj++) {
-            if (newCalendar[ii][jj] !== 0){
-              axios.get('http://localhost:4200/getVolunteerName/' + newCalendar[ii][jj], {
-                headers: {
-                  'Content-type': 'application/json; charset=utf-8'
-                }
-              })
-              .then( (response) => {
-                newCalendar[ii][jj] = response.data.volunteerName;
-                setCalendar(newCalendar);
-                console.log(newCalendar);
-              })
-              .catch( (error) => {
-                console.log("error in getVolunteerName: " + error);
-              })
-            }
-          }
-        }
+        setCalendar(response.data.calendar);
+        console.log(calendar);
+
       })
       .catch(function (error) {
         // handle error
@@ -189,16 +200,21 @@ const Calendar = () => {
       });
   }, []);
 
+  function getUserIDs()
+  {
+    
+  }
+
   /////////////////// end back-end route ///////////////////////////
   return (
   <table className="calendar">
     <tbody>
     <tr>
-      <th><Day day="M" busy={inferBusy(calendar[0][0])} name={getVolunteerFromID(calendar[0][0])}></Day></th>
-      <th><Day day="Tu" busy={inferBusy(calendar[1][0])} name={getVolunteerFromID(calendar[1][0])}></Day></th>
-      <th><Day day="W" busy={inferBusy(calendar[2][0])} name={getVolunteerFromID(calendar[2][0])}></Day></th>
-      <th><Day day="Th" busy={inferBusy(calendar[3][0])} name={getVolunteerFromID(calendar[3][0])}></Day></th>
-      <th><Day day="F" busy={inferBusy(calendar[4][0])} name={getVolunteerFromID(calendar[4][0])}></Day></th>
+      <th><Day day="M" busy={inferBusy(calendar[0][0])} name={calendar[0][0]}></Day></th>
+      <th><Day day="Tu" busy={inferBusy(calendar[1][0])} name={calendar[1][0]}></Day></th>
+      <th><Day day="W" busy={inferBusy(calendar[2][0])} name={calendar[2][0]}></Day></th>
+      <th><Day day="Th" busy={inferBusy(calendar[3][0])} name={calendar[3][0]}></Day></th>
+      <th><Day day="F" busy={inferBusy(calendar[4][0])} name={calendar[4][0]}></Day></th>
     </tr>
     </tbody>
   </table>
@@ -219,7 +235,7 @@ const Login = () => {
         'Content-type': 'application/x-www-form-urlencoded'
       }
     })
-    .then( (response) => {
+    .then((response) => {
       console.log("new user: " + username + " added");
     })
     .catch( (error) => {
