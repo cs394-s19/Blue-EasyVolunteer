@@ -1,3 +1,10 @@
+
+body {
+  background-color: #1fc8db;
+  background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
+  font-family: 'Montserrat', sans-serif;
+}
+
 .left-sidebar{
   text-align: left;
 }
@@ -13,33 +20,47 @@ th {
 
 .logoDiv {
   margin-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
 
 }
 
 .loginDiv {
-
+  margin-top: 20px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 
 }
 
-.loginInfoDiv {
-  margin-top: 50px;
+.login {
+  margin-right: 10px;
+  margin-left: 10px;
+  margin-bottom: 50px;
+  font-family: 'Montserrat', sans-serif;
+
 }
 
 .logo {
+  margin-top: 20px;
   text-shadow: 5px 5px 10px gray;
   color: steelblue;
   border-bottom: groove;
-  height: 100%;
-  width: 100%;
+  height: 4 0%;
+  width: 40%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 
 }
 
 .calendar {
   padding: 0px;
-  margin: 0px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 
 }
 
@@ -52,12 +73,27 @@ th {
 }
 
 .App {
+  background-color: white;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 75%;
+  border-radius: 12px;
 
 }
+
+
+.calendarDiv {
+  margin-left: auto;
+  margin-right: auto;
+  display: inline-block;
+}
+
 
 .calendar {
   vertical-align: top;
   text-align: center;
+
 }
 
 .day {
@@ -76,7 +112,7 @@ th {
 .true {
   padding: 0px;
   margin: 0px;
-  width: 120px;
+  max-width: 10%;
   background-color:rgba(255,102,102,0.9);
   border: 2px groove;
   font-family: 'Montserrat', sans-serif;
@@ -92,7 +128,7 @@ th {
   border-top: groove;
   padding: 0px;
   margin: 0px;
-  width: 120px;
+  max-width: 10%;
   border: 2px groove;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 

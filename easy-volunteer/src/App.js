@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import logo from './assets/logo2.svg'
+import './semantic/dist/semantic.min.css';
 import './App.css';
 
 const axios = require('axios');
@@ -12,7 +14,7 @@ const axios = require('axios');
 // }
 
 // function schedule(inName, dayIndex, slots) {
-//   //name is name, dayIndex is monday/tuesday/wednesday, slots is an array of 
+//   //name is name, dayIndex is monday/tuesday/wednesday, slots is an array of
 // }
 
 function getDayIndex(id) {
@@ -50,7 +52,7 @@ function getVolunteerFromID(id) {
 
   if (id !== 0)
     return id;
-} 
+}
 
 let username = "";
 
@@ -119,7 +121,7 @@ const Day = ({day, busy, name}) => {
     } else { //if busy
       if(username === ""){
         return;
-      } 
+      }
       else {
         if (dynamicName === username) {
           busy = !busy;
@@ -177,7 +179,7 @@ const Day = ({day, busy, name}) => {
 
 function inferBusy(id) {
   console.log(id);
-  return (id === 0) ? false : true; 
+  return (id === 0) ? false : true;
 }
 
 const Calendar = () => {
@@ -206,7 +208,7 @@ const Calendar = () => {
 
   function getUserIDs()
   {
-    
+
   }
 
   /////////////////// end back-end route ///////////////////////////
@@ -249,8 +251,8 @@ const Login = () => {
   return (
     <div>
       <form>
-        <input id="login" type="text" placeholder="Login here..." /><br />
-        <button onClick={handleLogin} type="button">Login</button>
+        <input class="ui huge icon input login" id="login" type="text" placeholder="Login here..." />
+        <button class="ui primary button login" onClick={handleLogin} type="button">Login</button>
       </form>
       <LoginInfo name={name}/>
     </div>
@@ -269,23 +271,24 @@ const App = () => {
       <center>
       <br /><br />
       <div className="App">
-        <table className="main-table">
-        <tbody>
-        <tr>
-          <th>
-            <div className="left-sidebar">
-              <div className="logo"><h1>EasyVolunteer</h1></div>
-              <Login />
-            </div>
-          </th>
-          <th className="right-sidebar"><Calendar className="calendar" /></th>
-        </tr>
-      </tbody>
-      </table>
+
+        <div className="logoDiv">
+          <img className="logo" src={logo} alt="logo" />
+        </div>
+
+        <div className="calendarDiv">
+          <Calendar className="calendar" />
+        </div>
+
+        <div className="loginDiv">
+          <Login />
+      
+
+        </div>
+
       </div>
       </center>
     )
 }
 
 export default App;
-
