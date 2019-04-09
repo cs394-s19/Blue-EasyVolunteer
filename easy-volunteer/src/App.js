@@ -1,5 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import './App.css';
+import './semantic/dist/semantic.min.css';
+
+import logo from './assets/logo2.svg'
 
 const days = [
   ["M",false,"false"],
@@ -73,20 +76,23 @@ const Login = () => {
   const [nome, setNome] = React.useState(username);
 
   return (
-    <div>
+    <div className="loginDiv">
       <form>
-        <input id="login" type="text" placeholder="Login here..." /><br />
-        <button onClick={() => {setNome(document.getElementById("login").value); localStorage.setItem("easyVolunteerName",document.getElementById("login").value); username = document.getElementById("login").value;}} type="button">Login</button>
+        <div class="ui input">
+          <input id="login" type="text" placeholder="Enter Name..." /><br />
+        </div>
+        <button class="ui primary button" onClick={() => {setNome(document.getElementById("login").value); localStorage.setItem("easyVolunteerName",document.getElementById("login").value); username = document.getElementById("login").value;}} type="button">Login</button>
       </form>
+
       <LoginInfo name={nome}/>
     </div>
   );
 }
 
 const LoginInfo = ({name}) => ( ((name !== "") && (name != null)) ?
-  <p>
-    Signed in as: <br /> {name}
-  </p>
+    <p>
+      Signed in as: <br /> {name}
+      </p>
   : <p></p>
 );
 
@@ -103,12 +109,16 @@ const App = () => {
         <tbody>
         <tr>
           <th>
-            <div className="left-sidebar">
-              <div className="logo"><h1>EasyVolunteer</h1></div>
-              <Login />
-            </div>
+
+              <div className="logoDiv">
+                <img className="logo" src={logo} alt="logo" />
+              </div>
+
+                <Login />
+
+
           </th>
-          <th className="right-sidebar"><Calendar className="calendar" DaysArray={days}/></th>
+          <Calendar className="calendar" DaysArray={days}/>
         </tr>
       </tbody>
       </table>

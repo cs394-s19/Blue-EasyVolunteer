@@ -136,7 +136,7 @@ app.get('/getVolunteerEmail/:volunteerID', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + 'easy-volunteer/build/index.html'));
+  res.sendFile(path.join(__dirname + '/easy-volunteer/build/index.html'));
 });
 
 const port = process.env.PORT || 4200;
