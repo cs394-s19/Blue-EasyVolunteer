@@ -2,10 +2,10 @@ const firebase = require('firebase');
 
 
 const config = {
-  apiKey: "AIzaSyCTEb2FXjt6gY7JK2vy407FOR6rSQFP5vE",
+  apiKey: "AIzaSyAmVsK0e7Qm6IEttTGYsQE4Z135oN2Kokk",
   authDomain: "easyvolunteer-7ae3b.firebaseapp.com",
-  databaseURL: "https://testing-66f86.firebaseio.com/",
-  storageBucket: "gs://testing-66f86.appspot.com/",
+  databaseURL: "https://easyvolunteer-7ae3b.firebaseio.com/",
+  storageBucket: "gs://easyvolunteer-7ae3b.appspot.com/",
 };
 
 firebase.initializeApp(config);

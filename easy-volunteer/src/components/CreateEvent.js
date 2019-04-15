@@ -18,21 +18,21 @@ const EventForm = () => {
   const [friday, toggleFriday] = useState('false');
   const [saturday, toggleSaturday] = useState('false');
   const [sunday, toggleSunday] = useState('false');
+  const [lengthShifts, updateLength] = useState(0);
 
   const database = firebase.database();
 
-  
-
   const handleSubmit = () => {
     
-    database.ref('Events/1').set({
+    let newEvent = database.ref('Events').push({
       firstName: firstName,
       lastName: lastName,
       orgName: orgName,
       eventName: eventName,
       description: description,
+      numShifts: lengthShifts
     });
-    database.ref('Events/1/Days').set({
+    database.ref('Events/' + newEvent.key + '/Calendar').set({
       Monday: monday,
       Tuesday: tuesday,
       Wednesday: wednesday,
@@ -41,9 +41,13 @@ const EventForm = () => {
       Saturday: saturday,
       Sunday: sunday
     });
-  
+    let dict = {};
+    for (let ii = 0; ii<lengthShifts; ii++){
+      let currSlot = 'slot' + ii.toString();
+      dict[currSlot] = 0;
+    }
+    database.ref('Events/' + newEvent.key + '/Calendar/Monday').set(dict);
   }
-
   const timeOptions = [
     {
       key: '.5hr',
@@ -76,7 +80,6 @@ const EventForm = () => {
       value: 1
     }
   ];
-    
 
   const formStyle = {
     marginLeft: '10%',
@@ -108,6 +111,7 @@ const EventForm = () => {
           selection
           width={8}
           options={timeOptions}
+          onChange={(e, {value}) => updateLength(value)}
         />
         <Button type='submit'>Create Event</Button>
       </Form>
