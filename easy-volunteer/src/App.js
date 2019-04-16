@@ -28,14 +28,15 @@ const Slot = ({currentUser, eventID, slotNum, header, loggedInUser}) => {
   const handleSlotClick = () => {
     let database = firebase.database();
     if (loggedInUser && !busySetting) {
-      database.ref('Events/' + eventID + 'Calendar/' + header + '/slot' + slotNum).set(loggedInUser);
+      console.log("setting user");
+      database.ref('Events/' + eventID + '/Calendar/' + header + '/slot' + slotNum).set(loggedInUser);
       setBusySetting(true);
 
       setDisplayed(loggedInUser);
     }
     else if ((loggedInUser === currentUser)) {
       setBusySetting(false);
-      database.ref('Events/' + eventID + 'Calendar/' + header + '/slot' + slotNum).set(0);
+      database.ref('Events/' + eventID + '/Calendar/' + header + '/slot' + slotNum).set(0);
 
       setDisplayed("");
     }
