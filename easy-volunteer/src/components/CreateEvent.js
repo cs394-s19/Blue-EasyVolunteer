@@ -11,19 +11,19 @@ const EventForm = () => {
   const [orgName, updateOrgName] = useState('');
   const [eventName, updateEventName] = useState('');
   const [description, updateDescription] = useState('');
-  const [monday, toggleMonday] = useState('false');
-  const [tuesday, toggleTuesday] = useState('false');
-  const [wednesday, toggleWednesday] = useState('false');
-  const [thursday, toggleThursday] = useState('false');
-  const [friday, toggleFriday] = useState('false');
-  const [saturday, toggleSaturday] = useState('false');
-  const [sunday, toggleSunday] = useState('false');
+  const [monday, toggleMonday] = useState(false);
+  const [tuesday, toggleTuesday] = useState(false);
+  const [wednesday, toggleWednesday] = useState(false);
+  const [thursday, toggleThursday] = useState(false);
+  const [friday, toggleFriday] = useState(false);
+  const [saturday, toggleSaturday] = useState(false);
+  const [sunday, toggleSunday] = useState(false);
   const [lengthShifts, updateLength] = useState(0);
 
   const database = firebase.database();
 
   const handleSubmit = () => {
-    
+
     let newEvent = database.ref('Events').push({
       firstName: firstName,
       lastName: lastName,
@@ -46,7 +46,15 @@ const EventForm = () => {
       let currSlot = 'slot' + ii.toString();
       dict[currSlot] = 0;
     }
-    database.ref('Events/' + newEvent.key + '/Calendar/Monday').set(dict);
+    var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var ifDay = [monday, tuesday, wednesday, thursday, friday, saturday, sunday];
+    for (var ii = 0; ii < daysOfWeek.length; ii++) {
+
+      if (ifDay[ii]){
+          console.log("monday");
+          database.ref('Events/' + newEvent.key + '/Calendar/' + daysOfWeek[ii]).set(dict);
+      }
+    }
   }
   const timeOptions = [
     {
@@ -116,7 +124,7 @@ const EventForm = () => {
         <Button type='submit'>Create Event</Button>
       </Form>
     </div>
-    
+
   )
 }
 

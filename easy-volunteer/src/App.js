@@ -86,7 +86,7 @@ const Calendar = ({eventID, userName}) => {
       let tempHeaders = [];
       let calDict = snapshot.val();
       for (let key in calDict) {
-        if (calDict[key] !== "false") {
+        if (calDict[key]) {
           let days = [];
           tempHeaders.push(key);
           for (let slot in calDict[key]) {
