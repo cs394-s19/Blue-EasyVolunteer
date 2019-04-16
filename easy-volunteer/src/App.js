@@ -109,7 +109,9 @@ const Calendar = ({eventID, userName}) => {
 
   return(
     <div className="calendar">
-    <h1>{eventName}</h1>
+    <div className="eventName">
+      <h1>{eventName}</h1>
+    </div>
       <div className="allDays">
       {(calendar.length) > 0 ?
       calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
@@ -146,13 +148,14 @@ const App = ({ match }) => {
 
               <div className="loginDiv">
                 <div className="loginFormDiv">
+                  {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
                 <Form onSubmit={() => handleSubmit()}>
                 <Form.Group>
                   <Form.Input size='large' onChange={(e, {value}) => setName(value)} width={8} fluid placeholder="Enter name" />
                   <Button primary type='submit'>Login</Button>
                 </Form.Group>
                 </Form>
-                {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
+
                 </div>
               </div>
       </div>
