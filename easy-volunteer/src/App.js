@@ -19,7 +19,7 @@ const Slot = ({currentUser, eventID, slotNum, header, loggedInUser}) => {
     return (id !== 0);
   }
 
-  const [busySetting, setBusySetting] = useState(inferBusy(loggedInUser));
+  const [busySetting, setBusySetting] = useState(inferBusy(currentUser));
 
   // rn, the information for updating the users name is happening on the client side. will implement realtime updates after
   // the core functionality works.
@@ -28,14 +28,15 @@ const Slot = ({currentUser, eventID, slotNum, header, loggedInUser}) => {
   const handleSlotClick = () => {
     let database = firebase.database();
     if (loggedInUser && !busySetting) {
-      database.ref('Events/' + eventID + 'Calendar/' + header + '/slot' + slotNum).set(loggedInUser);
+      console.log("setting user");
+      database.ref('Events/' + eventID + '/Calendar/' + header + '/slot' + slotNum).set(loggedInUser);
       setBusySetting(true);
 
       setDisplayed(loggedInUser);
     }
     else if ((loggedInUser === currentUser)) {
       setBusySetting(false);
-      database.ref('Events/' + eventID + 'Calendar/' + header + '/slot' + slotNum).set(0);
+      database.ref('Events/' + eventID + '/Calendar/' + header + '/slot' + slotNum).set(0);
 
       setDisplayed("");
     }
@@ -72,20 +73,48 @@ const Day = ({ids, header, eventID, loggedInUser}) => {
 
 
 const Calendar = ({eventID, userName}) => {
-  const headers = ["Mon", "Tues", "Wed", "Thur", "Fri"];
-  const eventName = "Sample Event";
-  const db = [[0, 1],[0, 0],[1, 0],[0, 0],[1, 1]];
-  const numDays = db.length;
-  const numSlots = db[0].length;
-  const days = db.map((day) =>
-      <Day loggedInUser={userName} ids={day} eventID={eventID} header="day"></Day>
-    );
+  const [headers, setHeaders] = useState([]);
+  const [eventName, setEventName] = useState("");
+  const [calendar, updateCalendar] = useState([[]]);
+
+  useEffect(() => {
+    let database = firebase.database();
+    let ref = database.ref('Events/' + eventID + '/Calendar/');
+    ref.on('value', (snapshot) => {
+      let fullCalendar = [];
+      let tempHeaders = [];
+      let calDict = snapshot.val();
+      for (let key in calDict) {
+        if (calDict[key] !== "false") {
+          let days = [];
+          tempHeaders.push(key);
+          for (let slot in calDict[key]) {
+            days.push(calDict[key][slot])
+          }
+          fullCalendar.push(days);
+        }
+      }
+      updateCalendar(fullCalendar);
+      setHeaders(tempHeaders);
+    });
+    
+
+      let eventNameRef = database.ref('Events/' + eventID);
+      eventNameRef.once('value', (snapshot) => {
+        setEventName(snapshot.val()['eventName']);
+      });
+    }, []);
+
+
   return(
     <div className="calendar">
-      {days}
+    <h1>{eventName}</h1>
+      {(calendar.length) > 0 ? 
+      calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
+    }
     </div>
   );
-};
+}
 
 
 
