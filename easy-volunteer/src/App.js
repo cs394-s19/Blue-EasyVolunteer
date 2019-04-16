@@ -85,7 +85,7 @@ const Calendar = ({eventID, userName}) => {
       let tempHeaders = [];
       let calDict = snapshot.val();
       for (let key in calDict) {
-        if (calDict[key] !== "false") {
+        if (calDict[key]) {
           let days = [];
           tempHeaders.push(key);
           for (let slot in calDict[key]) {
@@ -97,7 +97,7 @@ const Calendar = ({eventID, userName}) => {
       updateCalendar(fullCalendar);
       setHeaders(tempHeaders);
     });
-    
+
 
       let eventNameRef = database.ref('Events/' + eventID);
       eventNameRef.once('value', (snapshot) => {
@@ -109,7 +109,7 @@ const Calendar = ({eventID, userName}) => {
   return(
     <div className="calendar">
     <h1>{eventName}</h1>
-      {(calendar.length) > 0 ? 
+      {(calendar.length) > 0 ?
       calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
     }
     </div>
