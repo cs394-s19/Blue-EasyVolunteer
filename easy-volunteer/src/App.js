@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
 import { firebase } from './firebaseConfig';
 import { Form, Button } from 'semantic-ui-react';
+import './App.css';
+import logo from './assets/logo2.svg'
 
 
 const Slot = ({currentUser, eventID, slotNum, header, loggedInUser}) => {
@@ -97,7 +98,7 @@ const Calendar = ({eventID, userName}) => {
       updateCalendar(fullCalendar);
       setHeaders(tempHeaders);
     });
-    
+
 
       let eventNameRef = database.ref('Events/' + eventID);
       eventNameRef.once('value', (snapshot) => {
@@ -109,7 +110,7 @@ const Calendar = ({eventID, userName}) => {
   return(
     <div className="calendar">
     <h1>{eventName}</h1>
-      {(calendar.length) > 0 ? 
+      {(calendar.length) > 0 ?
       calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
     }
     </div>
@@ -138,7 +139,9 @@ const App = ({ match }) => {
         <tr>
           <th>
             <div className="left-sidebar">
-              <div className="logo"><h1>EasyVolunteer</h1></div>
+              <div className="logoDiv">
+                <img className="logo" src={logo} alt="logo" />
+              </div>
               <div>
                 <Form onSubmit={() => handleSubmit()}>
                   <Form.Input onChange={(e, {value}) => setName(value)} width={8} fluid label="Name" placeholder="Enter name" />
