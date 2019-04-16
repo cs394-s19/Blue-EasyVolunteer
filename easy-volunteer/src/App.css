@@ -101,6 +101,11 @@ form {
 
 }
 
+.createEventBtn {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
 
 .calendarDiv {
   margin-left: auto;
