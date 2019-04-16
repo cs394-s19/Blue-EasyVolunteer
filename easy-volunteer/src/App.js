@@ -110,9 +110,11 @@ const Calendar = ({eventID, userName}) => {
   return(
     <div className="calendar">
     <h1>{eventName}</h1>
+      <div className="allDays">
       {(calendar.length) > 0 ?
       calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
     }
+      </div>
     </div>
   );
 }
@@ -134,27 +136,25 @@ const App = ({ match }) => {
       <center>
       <br /><br />
       <div className="App">
-        <table className="main-table">
-        <tbody>
-        <tr>
-          <th>
-            <div className="left-sidebar">
-              <div className="logoDiv">
-                <img className="logo" src={logo} alt="logo" />
-              </div>
-              <div>
+          <div className="logoDiv">
+            <img className="logo" src={logo} alt="logo" />
+          </div>
+
+          <div>
+            <Calendar userName={isLogged ? name : false} eventID={match.params.id} className="calendar" />
+          </div>
+
+              <div className="loginDiv">
+                <div className="loginFormDiv">
                 <Form onSubmit={() => handleSubmit()}>
-                  <Form.Input onChange={(e, {value}) => setName(value)} width={8} fluid label="Name" placeholder="Enter name" />
-                  <Button type='submit'>Login</Button>
+                <Form.Group>
+                  <Form.Input size='large' onChange={(e, {value}) => setName(value)} width={8} fluid placeholder="Enter name" />
+                  <Button primary type='submit'>Login</Button>
+                </Form.Group>
                 </Form>
-                {isLogged ? <p>{name} is logged in!</p> : <p>Please log in</p>}
+                {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
+                </div>
               </div>
-            </div>
-          </th>
-          <th className="right-sidebar"><Calendar userName={isLogged ? name : false} eventID={match.params.id} className="calendar" /></th>
-        </tr>
-      </tbody>
-      </table>
       </div>
       </center>
     )

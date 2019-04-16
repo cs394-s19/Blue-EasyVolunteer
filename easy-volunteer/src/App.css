@@ -31,12 +31,26 @@ form {
   margin-bottom: 2%;
 }
 
+.fields {
+  margin-left: auto;
+  margin-right: auto;
+  align-items: center;
+  justify-content: center;
+}
 .loginDiv {
   margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
 
-  display: flex;
-  align-items: flex-start;
+  /* display: flex;
   justify-content: center;
+  flex-direction: row; */
+
+}
+
+.loginFormDiv {
+  margin-left: auto;
+  margin-right: auto;
 
 }
 
@@ -103,7 +117,7 @@ form {
 
 .day {
   cursor: pointer;
-  min-width: 120px;
+  width: 120px;
   padding-right: 20px;
 }
 
@@ -150,11 +164,17 @@ form {
 }
 
 .calendar {
+
+  height: 600px;
+}
+
+.allDays {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
-  height: 500px;
+  justify-content: center;
+  height: 90%;
 }
+
 
 .slot-false:hover{
 	 box-shadow: 0 6px 28px rgba(0,0,0,0.25);
