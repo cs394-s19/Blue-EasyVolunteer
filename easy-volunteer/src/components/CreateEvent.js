@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import { firebase } from '../firebaseConfig'
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch,
+  Redirect
+} from 'react-router-dom'
 
 
 
@@ -55,6 +62,8 @@ const EventForm = () => {
           database.ref('Events/' + newEvent.key + '/Calendar/' + daysOfWeek[ii]).set(dict);
       }
     }
+    alert("Event created! Taking you to your calendar page.");
+    window.open(`/event/${newEvent.key}`,"_self");
   }
   const timeOptions = [
     {
