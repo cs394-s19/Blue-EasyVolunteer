@@ -89,9 +89,12 @@ const Calendar = ({eventID, userName}) => {
         if (calDict[key]) {
           let days = [];
           tempHeaders.push(key);
-          for (let slot in calDict[key]) {
+          let slots = getSlots(calDict[key]);
+          
+          slots.forEach((slot) =>
+          {
             days.push(calDict[key][slot])
-          }
+          })
           fullCalendar.push(days);
         }
       }
@@ -119,6 +122,18 @@ const Calendar = ({eventID, userName}) => {
       </div>
     </div>
   );
+}
+
+const getSlots = (calDictDay) =>
+{
+  const slotSorter = Intl.Collator(undefined, {numeric: true, sensitivity: "base"});
+  let slots = []
+  for(let slot in calDictDay)
+  {
+    slots.push(slot);
+  }
+  slots.sort(slotSorter.compare);
+  return slots
 }
 
 
