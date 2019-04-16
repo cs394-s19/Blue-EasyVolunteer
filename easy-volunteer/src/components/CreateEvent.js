@@ -1,13 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import { firebase } from '../firebaseConfig'
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Switch,
-  Redirect
-} from 'react-router-dom'
+import '../App.css';
 
 
 
@@ -101,19 +95,21 @@ const EventForm = () => {
   const formStyle = {
     marginLeft: '10%',
     marginRight: '10%',
-    marginTop: '10%'
+    marginTop: '10%',
+    padding: '40px'
   };
   return (
-    <div style={formStyle}>
+    <div className='App'>
+      <div style={formStyle}>
       <Form onSubmit={() => handleSubmit()}>
         <Form.Group>
-          <Form.Input onChange={(e, {value}) => updateFirstName(value)} name="firstName" width={4} fluid label='First name' placeholder='First name' />
-          <Form.Input onChange={(e, {value}) => updateLastName(value)} name="lastName" width={4} fluid label='Last name' placeholder='Last name' />
+          <Form.Input onChange={(e, {value}) => updateFirstName(value)} name="firstName" width={8} fluid label='First name' placeholder='First name' />
+          <Form.Input onChange={(e, {value}) => updateLastName(value)} name="lastName" width={8} fluid label='Last name' placeholder='Last name' />
         </Form.Group>
-        <Form.Input onChange={(e, {value}) => updateOrgName(value)} name="orgName" width={8} fluid label="Organization Name (optional)" />
-        <Form.Input onChange={(e, {value}) => updateEventName(value)} name="eventName" width={8} fluid label="Event Name" />
-        <Form.TextArea onChange={(e, {value}) => updateDescription(value)} name="description" width={8} label='Event Description' placeholder='Tell us more about the event' />
-        <Form.Group>
+        <Form.Input onChange={(e, {value}) => updateOrgName(value)} name="orgName" width={16} fluid label="Organization Name (optional)" />
+        <Form.Input onChange={(e, {value}) => updateEventName(value)} name="eventName" width={16} fluid label="Event Name" />
+        <Form.TextArea onChange={(e, {value}) => updateDescription(value)} name="description" width={16} label='Event Description' placeholder='Tell us more about the event' />
+
           <Form.Checkbox onChange={(e, {checked}) => toggleMonday(checked)} name="monday" label="Monday" />
           <Form.Checkbox onChange={(e, {checked}) => toggleTuesday(checked)} name="tuesday" label="Tuesday" />
           <Form.Checkbox onChange={(e, {checked}) => toggleWednesday(checked)} name="wednesday" label="Wednesday" />
@@ -121,7 +117,7 @@ const EventForm = () => {
           <Form.Checkbox onChange={(e, {checked}) => toggleFriday(checked)} name="friday" label="Friday" />
           <Form.Checkbox onChange={(e, {checked}) => toggleSaturday(checked)} name="saturday" label="Saturday" />
           <Form.Checkbox onChange={(e, {checked}) => toggleSunday(checked)} name="sunday" label="Sunday" />
-        </Form.Group>
+      
         <Dropdown
           placeholder='Select the duration of shifts'
           fluid
@@ -130,8 +126,11 @@ const EventForm = () => {
           options={timeOptions}
           onChange={(e, {value}) => updateLength(value)}
         />
-        <Button type='submit'>Create Event</Button>
+        <div className='createEventBtn'>
+          <Button type='submit'>Create Event</Button>
+        </div>
       </Form>
+      </div>
     </div>
 
   )
