@@ -10,7 +10,7 @@ import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
 const routing = (
   <Router>
     <div>
-      <Route path="/:id" component={App} />
+      <Route path="/event/:id" component={App} />
       <Route path="/newEvent" component={EventForm} />
     </div>
   </Router>
