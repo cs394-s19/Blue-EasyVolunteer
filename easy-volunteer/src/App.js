@@ -78,26 +78,40 @@ const Calendar = ({eventID, userName}) => {
   const [eventName, setEventName] = useState("");
   const [calendar, updateCalendar] = useState([[]]);
 
+
+  const DaysOfWeek = {Sunday: 0,Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6};
+
+  const DayComparer = (day1,day2) =>
+  {
+    return DaysOfWeek[day1] > DaysOfWeek[day2] ? 1 : -1;
+  }
   useEffect(() => {
-    let database = firebase.database();
-    let ref = database.ref('Events/' + eventID + '/Calendar/');
+    const database = firebase.database();
+    const ref = database.ref('Events/' + eventID + '/Calendar/');
     ref.on('value', (snapshot) => {
       let fullCalendar = [];
       let tempHeaders = [];
-      let calDict = snapshot.val();
-      for (let key in calDict) {
-        if (calDict[key]) {
+      const calDict = snapshot.val();
+      const calDays = Object.keys(calDict)
+      .map(day => { return [day,calDict[day]]})
+      .sort((day1,day2) => DayComparer(day1[0],day2[0]));
+      calDays.map(dayTuple =>
+      {
+        const dayObject = dayTuple[1];
+        const dayName = dayTuple[0];
+        if(dayObject)
+        {
           let days = [];
-          tempHeaders.push(key);
-          let slots = getSlots(calDict[key]);
-          
-          slots.forEach((slot) =>
+          tempHeaders.push(dayName);
+          const slots = getSlots(dayObject);
+
+          slots.forEach(slot =>
           {
-            days.push(calDict[key][slot])
-          })
+            days.push(dayObject[slot]);
+          });
           fullCalendar.push(days);
         }
-      }
+      });
       updateCalendar(fullCalendar);
       setHeaders(tempHeaders);
     });
