@@ -142,22 +142,24 @@ const App = ({ match }) => {
             <img className="logo" src={logo} alt="logo" />
           </div>
 
+          <div className="loginDiv">
+            <div className="loginFormDiv">
+              {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
+            <Form onSubmit={() => handleSubmit()}>
+            <Form.Group>
+              <Form.Input size='large' onChange={(e, {value}) => setName(value)} width={8} fluid placeholder="Enter name" />
+              <Button primary type='submit'>Login</Button>
+            </Form.Group>
+            </Form>
+
+            </div>
+          </div>
+
           <div>
             <Calendar userName={isLogged ? name : false} eventID={match.params.id} className="calendar" />
           </div>
 
-              <div className="loginDiv">
-                <div className="loginFormDiv">
-                  {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
-                <Form onSubmit={() => handleSubmit()}>
-                <Form.Group>
-                  <Form.Input size='large' onChange={(e, {value}) => setName(value)} width={8} fluid placeholder="Enter name" />
-                  <Button primary type='submit'>Login</Button>
-                </Form.Group>
-                </Form>
 
-                </div>
-              </div>
       </div>
       </center>
     )
