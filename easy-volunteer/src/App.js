@@ -5,11 +5,11 @@ import './App.css';
 import logo from './assets/logo2.svg'
 
 
-const Slot = ({currentUser, eventID, slotNum, header, loggedInUser}) => {
+const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
 
   /*
     props:
-      currentUser - the user's name that's currently occupying the timeslot. 0 if time slot is free
+      occupyingUser - the user's name that's currently occupying the timeslot. 0 if time slot is free
       eventID - the id for the event in firebase
       slotNum - the index for the slot
       header - the header for the day. used to index the day in firebase
@@ -20,11 +20,11 @@ const Slot = ({currentUser, eventID, slotNum, header, loggedInUser}) => {
     return (id !== 0);
   }
 
-  const [busySetting, setBusySetting] = useState(inferBusy(currentUser));
+  const [busySetting, setBusySetting] = useState(inferBusy(occupyingUser));
 
   // rn, the information for updating the users name is happening on the client side. will implement realtime updates after
   // the core functionality works.
-  const [displayed, setDisplayed] = useState(currentUser ? currentUser : "");
+  const [displayed, setDisplayed] = useState(occupyingUser ? occupyingUser : "");
 
   const handleSlotClick = () => {
     let database = firebase.database();
@@ -35,7 +35,7 @@ const Slot = ({currentUser, eventID, slotNum, header, loggedInUser}) => {
 
       setDisplayed(loggedInUser);
     }
-    else if ((loggedInUser === currentUser)) {
+    else if ((loggedInUser === occupyingUser)) {
       setBusySetting(false);
       database.ref('Events/' + eventID + '/Calendar/' + header + '/slot' + slotNum).set(0);
 
@@ -43,8 +43,25 @@ const Slot = ({currentUser, eventID, slotNum, header, loggedInUser}) => {
     }
   }
 
+  const getSlotClassName = () =>
+  {
+    if(busySetting)
+    {
+      if(occupyingUser === loggedInUser)
+      {
+        console.log("yellow");
+        return "slot-user";
+      }
+      return "slot-others";
+    }
+    else
+    {
+      return "slot-free";
+    }
+  }
+
   return(
-    <div className={busySetting ? "slot-true" : "slot-false"} onClick={() => handleSlotClick()}>
+    <div className={getSlotClassName()} onClick={() => handleSlotClick()}>
       {displayed}
     </div>
   );
@@ -59,7 +76,7 @@ const Day = ({ids, header, eventID, loggedInUser}) => {
       loggedInUser - the name of the user currently logged in the machine
   */
 
-  const slots = ids.map((item, key) => <Slot header={header} eventID={eventID} slotNum={key} currentUser={item} loggedInUser={loggedInUser}></Slot>)
+  const slots = ids.map((item, key) => <Slot header={header} eventID={eventID} slotNum={key} occupyingUser={item} loggedInUser={loggedInUser}></Slot>)
   return(
     <div className="day">
       <div className="header">
@@ -108,7 +125,6 @@ const Calendar = ({eventID, userName}) => {
         let days = [];
         tempHeaders.push(dayName);
         const slots = getSlots(dayObject);
-
         slots.forEach(slot =>
         {
           days.push(dayObject[slot]);
