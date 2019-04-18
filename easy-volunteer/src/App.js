@@ -78,23 +78,43 @@ const Calendar = ({eventID, userName}) => {
   const [eventName, setEventName] = useState("");
   const [calendar, updateCalendar] = useState([[]]);
 
+
+  const DaysOfWeek = {Sunday: 0,Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6};
+
+  const DayComparer = (day1,day2) =>
+  {
+    return DaysOfWeek[day1] > DaysOfWeek[day2] ? 1 : -1;
+  }
+
+  const generateDayTupleArray = (calendarDict,compare=DayComparer) =>
+  {
+    return Object.keys(calendarDict)
+    .map(day => [day,calendarDict[day]])
+    .sort((day1,day2) => compare(day1[0],day2[0]))
+    .filter(dayTuple => dayTuple[1]);
+  }
+
   useEffect(() => {
-    let database = firebase.database();
-    let ref = database.ref('Events/' + eventID + '/Calendar/');
+    const database = firebase.database();
+    const ref = database.ref('Events/' + eventID + '/Calendar/');
     ref.on('value', (snapshot) => {
       let fullCalendar = [];
       let tempHeaders = [];
-      let calDict = snapshot.val();
-      for (let key in calDict) {
-        if (calDict[key]) {
-          let days = [];
-          tempHeaders.push(key);
-          for (let slot in calDict[key]) {
-            days.push(calDict[key][slot])
-          }
-          fullCalendar.push(days);
-        }
-      }
+      const dayTuples = generateDayTupleArray(snapshot.val());
+      dayTuples.map(dayTuple =>
+      {
+        const dayObject = dayTuple[1];
+        const dayName = dayTuple[0];
+        let days = [];
+        tempHeaders.push(dayName);
+        const slots = getSlots(dayObject);
+
+        slots.forEach(slot =>
+        {
+          days.push(dayObject[slot]);
+        });
+        fullCalendar.push(days);
+      });
       updateCalendar(fullCalendar);
       setHeaders(tempHeaders);
     });
@@ -119,6 +139,18 @@ const Calendar = ({eventID, userName}) => {
       </div>
     </div>
   );
+}
+
+const getSlots = (calDictDay) =>
+{
+  const slotSorter = Intl.Collator(undefined, {numeric: true, sensitivity: "base"});
+  let slots = []
+  for(let slot in calDictDay)
+  {
+    slots.push(slot);
+  }
+  slots.sort(slotSorter.compare);
+  return slots
 }
 
 
