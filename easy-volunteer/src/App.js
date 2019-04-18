@@ -126,6 +126,29 @@ const Calendar = ({eventID, userName}) => {
       });
     }, []);
 
+    function timelabels(numSlots, start, end) {
+      function getTime(n) {
+           n = (n > 24) ? (n % 24) : n;
+           let hour = Math.trunc(n);
+           let ampm = ((hour >= 12) && (hour != 24)) ? "PM" : "AM";
+           hour = (hour <= 12) ? hour : (hour % 12);
+           let min = parseInt((n % 1.0) * 60);
+           let hourString = (hour < 10) ? ("0" + hour) : hour;
+           let minString = (min < 10) ? ("0" + min) : min;
+           return hourString + ":" + minString + " " + ampm;
+        }
+       const lengthOfDay = end - start;
+       const durationOfSlots = parseFloat((lengthOfDay/numSlots).toFixed(1));
+       let times = [numSlots];
+       times[0] = start;
+       let i = 0;
+       for(i = 1; i < numSlots; i++) {
+            times[i] = times[i-1] + durationOfSlots;
+        }
+       let labels = times.map(getTime);
+       return labels;
+    }
+    const timestampArray = timelabels(calendar[0].length, 0, 24);
 
   return(
     <div className="calendar">
@@ -133,6 +156,26 @@ const Calendar = ({eventID, userName}) => {
       <h1>{eventName}</h1>
     </div>
       <div className="allDays">
+       <div className="allTimestamps">
+         <div className="headerSpacer"> {/* this is to create the correct amount of spacing */}
+          </div>
+        {timestampArray.map((timestamp) =>
+          <div className="timestamp"> {timestamp} </div>
+        )}
+       </div>
+      {/* <div className="allTimestamps">
+      //   <div className="header">
+      //
+      //   </div>
+      //   <div className="timestamp"> TestTimeStamp </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      // </div>
+      */}
+
       {(calendar.length) > 0 ?
       calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
     }
@@ -176,7 +219,7 @@ const App = ({ match }) => {
 
           <div className="loginDiv">
             <div className="loginFormDiv">
-              {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
+                {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
             <Form onSubmit={() => handleSubmit()}>
             <Form.Group>
               <Form.Input size='large' onChange={(e, {value}) => setName(value)} width={8} fluid placeholder="Enter name" />
