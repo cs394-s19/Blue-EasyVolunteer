@@ -142,29 +142,17 @@ const Calendar = ({eventID, userName}) => {
       });
     }, []);
 
-    function timelabels(numSlots, start, end) {
-      function getTime(n) {
-           n = (n > 24) ? (n % 24) : n;
-           let hour = Math.trunc(n);
-           let ampm = ((hour >= 12) && (hour != 24)) ? "PM" : "AM";
-           hour = (hour <= 12) ? hour : (hour % 12);
-           let min = parseInt((n % 1.0) * 60);
-           let hourString = (hour < 10) ? ("0" + hour) : hour;
-           let minString = (min < 10) ? ("0" + min) : min;
-           return hourString + ":" + minString + " " + ampm;
-        }
-       const lengthOfDay = end - start;
-       const durationOfSlots = parseFloat((lengthOfDay/numSlots).toFixed(1));
-       let times = [numSlots];
-       times[0] = start;
-       let i = 0;
-       for(i = 1; i < numSlots; i++) {
-            times[i] = times[i-1] + durationOfSlots;
-        }
-       let labels = times.map(getTime);
-       return labels;
+    const getTimeLabels = (numSlots, startTime=0.0, endTime=24.0) => {
+      const getTimeString = (n) => {
+          return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
+      }
+        let times = [numSlots];
+        for(let i = 0; i < numSlots; i++) { 
+          times[i] = (i == 0) ? (startTime) : times[i-1] + parseFloat((endTime - startTime) / numSlots);
+      }
+        return times.map(getTimeString);
     }
-    const timestampArray = timelabels(calendar[0].length, 0, 24);
+    const timestampArray = getTimeLabels(calendar[0].length);
 
   return(
     <div className="calendar">
