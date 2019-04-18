@@ -41,17 +41,19 @@ const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
 
       setDisplayed("");
     }
+    if(!loggedInUser) {
+      alert("You must log in to pick up a shift.");
+    }
   }
 
   const getSlotClassName = () =>
   {
-    if(busySetting)
+    if(busySetting && occupyingUser === loggedInUser)
     {
-      if(occupyingUser === loggedInUser)
-      {
-        console.log("yellow");
-        return "slot-user";
-      }
+      return "slot-user";
+    }
+    else if(busySetting)
+    {
       return "slot-others";
     }
     else
