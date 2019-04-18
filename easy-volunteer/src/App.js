@@ -5,7 +5,7 @@ import './App.css';
 import logo from './assets/logo2.svg'
 
 
-const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
+const Slot = ({occupyingUser, eventID, slotNum, slot_header, loggedInUser}) => {
 
   /*
     props:
@@ -16,53 +16,53 @@ const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
       loggedInUser - the name of the user currently logged in the machine
   */
 
-  const  inferBusy = (id) => {
-    return (id !== 0);
-  }
+  const [busySetting, setBusySetting] = useState(false);
+  const [slotClass, setClassName] = useState('slot-free');
+  const [displayed, setDisplayed] = useState(0);
 
-  const [busySetting, setBusySetting] = useState(inferBusy(occupyingUser));
+  let database = firebase.database();
+  let ref = database.ref('Events/' + eventID + '/Calendar/' + slot_header + '/slot' + slotNum);
+  ref.on('value', (snapshot) => {
+    if (snapshot.val() !== displayed){
+      if (displayed === 0){
+        setDisplayed(snapshot.val());
+        setBusySetting(true);
+        if (snapshot.val() === loggedInUser)
+          setClassName('slot-user')
+        else
+          setClassName('slot-others');
+      }
+      else {
+        setDisplayed(0);
+        setBusySetting(false);
+        setClassName('slot-free');
+      }
+    }
+  });
 
-  // rn, the information for updating the users name is happening on the client side. will implement realtime updates after
-  // the core functionality works.
-  const [displayed, setDisplayed] = useState(occupyingUser ? occupyingUser : "");
+  useEffect(() => {
+    if (displayed === loggedInUser)
+      setClassName('slot-user');
+    else if (displayed === 0)
+      setClassName('slot-free');
+    else
+      setClassName('slot-others');
+  }, [loggedInUser])
+
 
   const handleSlotClick = () => {
     let database = firebase.database();
     if (loggedInUser && !busySetting) {
-      console.log("setting user");
-      database.ref('Events/' + eventID + '/Calendar/' + header + '/slot' + slotNum).set(loggedInUser);
-      setBusySetting(true);
-
-      setDisplayed(loggedInUser);
+      database.ref('Events/' + eventID + '/Calendar/' + slot_header + '/slot' + slotNum).set(loggedInUser);
     }
-    else if ((loggedInUser === occupyingUser)) {
-      setBusySetting(false);
-      database.ref('Events/' + eventID + '/Calendar/' + header + '/slot' + slotNum).set(0);
-
-      setDisplayed("");
-    }
-  }
-
-  const getSlotClassName = () =>
-  {
-    if(busySetting)
-    {
-      if(occupyingUser === loggedInUser)
-      {
-        console.log("yellow");
-        return "slot-user";
-      }
-      return "slot-others";
-    }
-    else
-    {
-      return "slot-free";
+    else if ((loggedInUser === displayed)) {
+      database.ref('Events/' + eventID + '/Calendar/' + slot_header + '/slot' + slotNum).set(0);
     }
   }
 
   return(
-    <div className={getSlotClassName()} onClick={() => handleSlotClick()}>
-      {displayed}
+    <div className={slotClass} onClick={() => handleSlotClick()}>
+      {displayed ? displayed : ""}
     </div>
   );
 }
@@ -75,8 +75,7 @@ const Day = ({ids, header, eventID, loggedInUser}) => {
       header - the header for the day. used to index the day in firebase
       loggedInUser - the name of the user currently logged in the machine
   */
-
-  const slots = ids.map((item, key) => <Slot header={header} eventID={eventID} slotNum={key} occupyingUser={item} loggedInUser={loggedInUser}></Slot>)
+  const slots = ids.map((item, key) => <Slot slot_header={header} eventID={eventID} slotNum={key} occupyingUser={item} loggedInUser={loggedInUser}></Slot>)
   return(
     <div className="day">
       <div className="header">
@@ -114,7 +113,7 @@ const Calendar = ({eventID, userName}) => {
   useEffect(() => {
     const database = firebase.database();
     const ref = database.ref('Events/' + eventID + '/Calendar/');
-    ref.on('value', (snapshot) => {
+    ref.once('value', (snapshot) => {
       let fullCalendar = [];
       let tempHeaders = [];
       const dayTuples = generateDayTupleArray(snapshot.val());
