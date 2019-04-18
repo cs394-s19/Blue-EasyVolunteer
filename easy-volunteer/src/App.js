@@ -43,8 +43,25 @@ const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
     }
   }
 
+  const getSlotClassName = () =>
+  {
+    if(busySetting)
+    {
+      if(occupyingUser === loggedInUser)
+      {
+        console.log("yellow");
+        return "slot-user";
+      }
+      return "slot-others";
+    }
+    else
+    {
+      return "slot-free";
+    }
+  }
+
   return(
-    <div className={busySetting ? "slot-true" : "slot-false"} onClick={() => handleSlotClick()}>
+    <div className={getSlotClassName()} onClick={() => handleSlotClick()}>
       {displayed}
     </div>
   );
@@ -108,7 +125,6 @@ const Calendar = ({eventID, userName}) => {
         let days = [];
         tempHeaders.push(dayName);
         const slots = getSlots(dayObject);
-
         slots.forEach(slot =>
         {
           days.push(dayObject[slot]);

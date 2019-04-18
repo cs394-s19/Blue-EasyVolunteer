@@ -141,7 +141,20 @@ form {
   height: 5%;
 }
 
-.slot-true {
+.slot-user {
+  background-color:rgba(150, 255, 176,1);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  flex: 1;
+  font-family: 'Montserrat', sans-serif;
+  color: black;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  outline: 1px solid black;
+}
+
+
+.slot-others {
   background-color:rgba(255,102,102,0.9);
   display: flex;
   justify-content: center;
@@ -153,11 +166,11 @@ form {
   outline: 1px solid black;
 }
 
-.slot-true:hover{
+.slot-free:hover{
 	 box-shadow: 0 6px 28px rgba(0,0,0,0.25);
 }
 
-.slot-false {
+.slot-free {
   font-family: 'Montserrat', sans-serif;
   display: flex;
   justify-content: center;
