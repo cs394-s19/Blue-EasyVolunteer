@@ -97,6 +97,8 @@ const Calendar = ({eventID, userName}) => {
   const [headers, setHeaders] = useState([]);
   const [eventName, setEventName] = useState("");
   const [calendar, updateCalendar] = useState([[]]);
+  const [start, getStart] = useState(0);
+  const [end, getEnd] = useState(0);
 
 
   const DaysOfWeek = {Sunday: 0,Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6};
@@ -139,10 +141,13 @@ const Calendar = ({eventID, userName}) => {
     });
 
 
-      let eventNameRef = database.ref('Events/' + eventID);
-      eventNameRef.once('value', (snapshot) => {
-        setEventName(snapshot.val()['eventName']);
-      });
+    let eventNameRef = database.ref('Events/' + eventID);
+    eventNameRef.once('value', (snapshot) => {
+      setEventName(snapshot.val()['eventName']);
+      getStart(snapshot.val()['startTime']);
+      getEnd(snapshot.val()['endTime']);
+    });
+
     }, []);
 
     const getTimeLabels = (numSlots, startTime=0.0, endTime=24.0) => {
@@ -155,7 +160,7 @@ const Calendar = ({eventID, userName}) => {
       }
         return times.map(getTimeString);
     }
-    const timestampArray = getTimeLabels(calendar[0].length);
+    const timestampArray = getTimeLabels(calendar[0].length, start, end);
 
   return(
     <div className="calendar">
