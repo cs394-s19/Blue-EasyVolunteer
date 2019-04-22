@@ -5,7 +5,7 @@ import './App.css';
 import logo from './assets/logo2.svg'
 
 
-const Slot = ({occupyingUser, eventID, slotNum, slot_header, loggedInUser}) => {
+const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
 
   /*
     props:
@@ -16,52 +16,28 @@ const Slot = ({occupyingUser, eventID, slotNum, slot_header, loggedInUser}) => {
       loggedInUser - the name of the user currently logged in the machine
   */
 
-  const [busySetting, setBusySetting] = useState(false);
-  const [slotClass, setClassName] = useState('slot-free');
-  const [displayed, setDisplayed] = useState(0);
+  const  inferBusy = (id) => {
+    return (id !== 0);
+  }
 
-  let database = firebase.database();
-  let ref = database.ref('Events/' + eventID + '/Calendar/' + slot_header + '/slot' + slotNum);
-  ref.on('value', (snapshot) => {
-    if (snapshot.val() !== displayed){
-      if (displayed === 0){
-        setDisplayed(snapshot.val());
-        setBusySetting(true);
-        if (snapshot.val() === loggedInUser)
-          setClassName('slot-user')
-        else
-          setClassName('slot-others');
-      }
-      else {
-        setDisplayed(0);
-        setBusySetting(false);
-        setClassName('slot-free');
-      }
-    }
-  });
+  const [busySetting, setBusySetting] = useState(inferBusy(occupyingUser));
 
-  useEffect(() => {
-    if (displayed === loggedInUser)
-      setClassName('slot-user');
-    else if (displayed === 0)
-      setClassName('slot-free');
-    else
-      setClassName('slot-others');
-  }, [loggedInUser])
-
+  // rn, the information for updating the users name is happening on the client side. will implement realtime updates after
+  // the core functionality works.
+  const [displayed, setDisplayed] = useState(occupyingUser ? occupyingUser : "");
 
   const handleSlotClick = () => {
     let database = firebase.database();
     if (loggedInUser && !busySetting) {
       console.log("setting user");
-      database.ref('Events/' + eventID + '/Calendar/' + slot_header + '/slot' + slotNum).set(loggedInUser);
+      database.ref('Events/' + eventID + '/Calendar/' + header + '/slot' + slotNum).set(loggedInUser);
       setBusySetting(true);
 
       setDisplayed(loggedInUser);
     }
     else if ((loggedInUser === occupyingUser)) {
       setBusySetting(false);
-      database.ref('Events/' + eventID + '/Calendar/' + slot_header + '/slot' + slotNum).set(0);
+      database.ref('Events/' + eventID + '/Calendar/' + header + '/slot' + slotNum).set(0);
 
       setDisplayed("");
     }
@@ -69,9 +45,26 @@ const Slot = ({occupyingUser, eventID, slotNum, slot_header, loggedInUser}) => {
       alert("You must log in to pick up a shift.");
     }
   }
+
+  const getSlotClassName = () =>
+  {
+    if(busySetting && occupyingUser === loggedInUser)
+    {
+      return "slot-user";
+    }
+    else if(busySetting)
+    {
+      return "slot-others";
+    }
+    else
+    {
+      return "slot-free";
+    }
+  }
+
   return(
-    <div className={slotClass} onClick={() => handleSlotClick()}>
-      {displayed ? displayed : ""}
+    <div className={getSlotClassName()} onClick={() => handleSlotClick()}>
+      {displayed}
     </div>
   );
 }
@@ -84,7 +77,8 @@ const Day = ({ids, header, eventID, loggedInUser}) => {
       header - the header for the day. used to index the day in firebase
       loggedInUser - the name of the user currently logged in the machine
   */
-  const slots = ids.map((item, key) => <Slot slot_header={header} eventID={eventID} slotNum={key} occupyingUser={item} loggedInUser={loggedInUser}></Slot>)
+
+  const slots = ids.map((item, key) => <Slot header={header} eventID={eventID} slotNum={key} occupyingUser={item} loggedInUser={loggedInUser}></Slot>)
   return(
     <div className="day">
       <div className="header">
@@ -122,7 +116,7 @@ const Calendar = ({eventID, userName}) => {
   useEffect(() => {
     const database = firebase.database();
     const ref = database.ref('Events/' + eventID + '/Calendar/');
-    ref.once('value', (snapshot) => {
+    ref.on('value', (snapshot) => {
       let fullCalendar = [];
       let tempHeaders = [];
       const dayTuples = generateDayTupleArray(snapshot.val());
@@ -150,17 +144,6 @@ const Calendar = ({eventID, userName}) => {
       });
     }, []);
 
-    const getTimeLabels = (numSlots, startTime=0.0, endTime=24.0) => {
-      const getTimeString = (n) => {
-          return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
-      }
-        let times = [numSlots];
-        for(let i = 0; i < numSlots; i++) { 
-          times[i] = (i == 0) ? (startTime) : times[i-1] + parseFloat((endTime - startTime) / numSlots);
-      }
-        return times.map(getTimeString);
-    }
-    const timestampArray = getTimeLabels(calendar[0].length);
 
   return(
     <div className="calendar">
@@ -168,26 +151,6 @@ const Calendar = ({eventID, userName}) => {
       <h1>{eventName}</h1>
     </div>
       <div className="allDays">
-       <div className="allTimestamps">
-         <div className="headerSpacer"> {/* this is to create the correct amount of spacing */}
-          </div>
-        {timestampArray.map((timestamp) =>
-          <div className="timestamp"> {timestamp} </div>
-        )}
-       </div>
-      {/* <div className="allTimestamps">
-      //   <div className="header">
-      //
-      //   </div>
-      //   <div className="timestamp"> TestTimeStamp </div>
-      //   <div className="timestamp"> TestTimeStamp2 </div>
-      //   <div className="timestamp"> TestTimeStamp2 </div>
-      //   <div className="timestamp"> TestTimeStamp2 </div>
-      //   <div className="timestamp"> TestTimeStamp2 </div>
-      //   <div className="timestamp"> TestTimeStamp2 </div>
-      // </div>
-      */}
-
       {(calendar.length) > 0 ?
       calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
     }
@@ -231,7 +194,7 @@ const App = ({ match }) => {
 
           <div className="loginDiv">
             <div className="loginFormDiv">
-                {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
+              {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
             <Form onSubmit={() => handleSubmit()}>
             <Form.Group>
               <Form.Input size='large' onChange={(e, {value}) => setName(value)} width={8} fluid placeholder="Enter name" />
