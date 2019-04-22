@@ -1,4 +1,3 @@
-
 body {
   background-color: #1fc8db;
   background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%) !important;
@@ -141,6 +140,12 @@ form {
   height: 5%;
 }
 
+.headerSpacer {
+  font-family: 'Montserrat', sans-serif;
+  height: 5%;
+  /* border: 1px solid blue; */
+}
+
 .slot-user {
   background-color:rgba(150, 255, 176,1);
   display: flex;
@@ -151,6 +156,21 @@ form {
   color: black;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   outline: 1px solid black;
+  animation-name: bg;
+  animation-duration: .5s;
+  animation-timing-function: linear;
+  animation-delay: none;
+  animation-iteration-count: 1;
+}
+
+@keyframes bg {
+  0%{
+    background-color: inherit;
+   }
+
+   100%{
+     background-color: rgba(150, 255, 176,1);
+   }
 }
 
 
@@ -185,6 +205,20 @@ form {
 .calendar {
 
   height: 600px;
+}
+
+.allTimestamps {
+  display: flex;
+  flex-direction: column;
+}
+
+.timestamp {
+  display: flex;
+  margin-top: -8px;
+  padding-right: 10px;
+  flex-direction: column;
+  flex: 1;
+  /* outline: 1px solid red; */
 }
 
 .allDays {

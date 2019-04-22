@@ -48,12 +48,13 @@ const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
 
   const getSlotClassName = () =>
   {
-    if(busySetting && occupyingUser === loggedInUser)
+    if(busySetting)
     {
-      return "slot-user";
-    }
-    else if(busySetting)
-    {
+      if(occupyingUser === loggedInUser)
+      {
+        console.log("yellow");
+        return "slot-user";
+      }
       return "slot-others";
     }
     else
@@ -96,6 +97,8 @@ const Calendar = ({eventID, userName}) => {
   const [headers, setHeaders] = useState([]);
   const [eventName, setEventName] = useState("");
   const [calendar, updateCalendar] = useState([[]]);
+  const [start, getStart] = useState(0);
+  const [end, getEnd] = useState(0);
 
 
   const DaysOfWeek = {Sunday: 0,Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6};
@@ -138,12 +141,26 @@ const Calendar = ({eventID, userName}) => {
     });
 
 
-      let eventNameRef = database.ref('Events/' + eventID);
-      eventNameRef.once('value', (snapshot) => {
-        setEventName(snapshot.val()['eventName']);
-      });
+    let eventNameRef = database.ref('Events/' + eventID);
+    eventNameRef.once('value', (snapshot) => {
+      setEventName(snapshot.val()['eventName']);
+      getStart(snapshot.val()['startTime']);
+      getEnd(snapshot.val()['endTime']);
+    });
+
     }, []);
 
+    const getTimeLabels = (numSlots, startTime=0.0, endTime=24.0) => {
+      const getTimeString = (n) => {
+          return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
+      }
+        let times = [numSlots];
+        for(let i = 0; i < numSlots; i++) {
+          times[i] = (i == 0) ? (startTime) : times[i-1] + parseFloat((endTime - startTime) / numSlots);
+      }
+        return times.map(getTimeString);
+    }
+    const timestampArray = getTimeLabels(calendar[0].length, start, end);
 
   return(
     <div className="calendar">
@@ -151,6 +168,26 @@ const Calendar = ({eventID, userName}) => {
       <h1>{eventName}</h1>
     </div>
       <div className="allDays">
+       <div className="allTimestamps">
+         <div className="headerSpacer"> {/* this is to create the correct amount of spacing */}
+          </div>
+        {timestampArray.map((timestamp) =>
+          <div className="timestamp"> {timestamp} </div>
+        )}
+       </div>
+      {/* <div className="allTimestamps">
+      //   <div className="header">
+      //
+      //   </div>
+      //   <div className="timestamp"> TestTimeStamp </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      //   <div className="timestamp"> TestTimeStamp2 </div>
+      // </div>
+      */}
+
       {(calendar.length) > 0 ?
       calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
     }
@@ -181,9 +218,20 @@ const App = ({ match }) => {
 
   const [name, setName] = useState("");
   const [isLogged, toggleLogged] = useState(false);
-  const handleSubmit = () => {
-    toggleLogged(true);
+  const handleSubmit = (value) => {
+    // Ensure that user has first and last name
+    if (name.indexOf(' ') == -1) {
+      alert('You must have a first and last name');
+    }
+    else {
+      toggleLogged(true);
+    }
   }
+  // Capitalize each word in name
+  const capitalizeWords = (str) => {
+      return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  }
+
     return (
       <center>
       <br /><br />
@@ -194,11 +242,11 @@ const App = ({ match }) => {
 
           <div className="loginDiv">
             <div className="loginFormDiv">
-              {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
+                {isLogged ? <p>{name} is logged in!</p> : <p>Please log in with your first and last name.</p>}
             <Form onSubmit={() => handleSubmit()}>
             <Form.Group>
-              <Form.Input size='large' onChange={(e, {value}) => setName(value)} width={8} fluid placeholder="Enter name" />
-              <Button primary type='submit'>Login</Button>
+              <Form.Input size='large' disabled={isLogged} onChange={(e, {value}) => setName(capitalizeWords(value))} width={8} fluid placeholder="Enter name" />
+              <Button primary type='submit' disabled={isLogged}>Login</Button>
             </Form.Group>
             </Form>
 
