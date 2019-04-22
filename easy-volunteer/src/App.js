@@ -41,6 +41,9 @@ const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
 
       setDisplayed("");
     }
+    if(!loggedInUser) {
+      alert("You must log in to pick up a shift.");
+    }
   }
 
   const getSlotClassName = () =>
@@ -147,7 +150,7 @@ const Calendar = ({eventID, userName}) => {
           return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
       }
         let times = [numSlots];
-        for(let i = 0; i < numSlots; i++) { 
+        for(let i = 0; i < numSlots; i++) {
           times[i] = (i == 0) ? (startTime) : times[i-1] + parseFloat((endTime - startTime) / numSlots);
       }
         return times.map(getTimeString);
@@ -210,9 +213,20 @@ const App = ({ match }) => {
 
   const [name, setName] = useState("");
   const [isLogged, toggleLogged] = useState(false);
-  const handleSubmit = () => {
-    toggleLogged(true);
+  const handleSubmit = (value) => {
+    // Ensure that user has first and last name
+    if (name.indexOf(' ') == -1) {
+      alert('You must have a first and last name');
+    }
+    else {
+      toggleLogged(true);
+    }
   }
+  // Capitalize each word in name
+  const capitalizeWords = (str) => {
+      return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  }
+
     return (
       <center>
       <br /><br />
@@ -223,11 +237,11 @@ const App = ({ match }) => {
 
           <div className="loginDiv">
             <div className="loginFormDiv">
-                {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
+                {isLogged ? <p>{name} is logged in!</p> : <p>Please log in with your first and last name.</p>}
             <Form onSubmit={() => handleSubmit()}>
             <Form.Group>
-              <Form.Input size='large' onChange={(e, {value}) => setName(value)} width={8} fluid placeholder="Enter name" />
-              <Button primary type='submit'>Login</Button>
+              <Form.Input size='large' disabled={isLogged} onChange={(e, {value}) => setName(capitalizeWords(value))} width={8} fluid placeholder="Enter name" />
+              <Button primary type='submit' disabled={isLogged}>Login</Button>
             </Form.Group>
             </Form>
 
