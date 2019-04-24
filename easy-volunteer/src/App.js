@@ -208,7 +208,24 @@ const getSlots = (calDictDay) =>
   return slots
 }
 
-
+const LinkInfo = () =>
+{
+  const URL = window.location.href;
+  const handleLinkInfoClick = () =>
+  {
+    const urlHidden = document.getElementById("link-info-hidden-box");
+    urlHidden.select();
+    document.execCommand("copy");
+    alert("Copied " + urlHidden.value + " to clipboard!");
+  }
+  //this button text can/should be updated
+  return(
+    <div className="link-info">
+      <button onClick={handleLinkInfoClick} className="link-info-text">Share Link: {URL}</button>
+      <input id="link-info-hidden-box" type="text" className="link-info-hidden-box" value={URL} readOnly></input>
+    </div>
+  );
+}
 
 const App = ({ match }) => {
   /*
@@ -257,7 +274,7 @@ const App = ({ match }) => {
             <Calendar userName={isLogged ? name : false} eventID={match.params.id} className="calendar" />
           </div>
 
-
+      <LinkInfo />
       </div>
       </center>
     )

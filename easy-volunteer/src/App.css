@@ -26,6 +26,24 @@ th {
 
 }
 
+.link-info-hidden-box {
+  border: none;
+  width: 0px;
+  height: 0px;
+  display: none;
+  visibility: hidden;
+}
+
+.link-info-text {
+  cursor: pointer !important;
+  padding: 5px;
+  margin: 10px;
+  background-color: #2184D0;
+  color: white;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
 form {
   margin-bottom: 2%;
 }
