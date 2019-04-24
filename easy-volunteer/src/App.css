@@ -69,7 +69,8 @@ form {
   margin-left: auto;
   margin-right: auto;
   padding-bottom: 10px;
-
+  font-weight: bold;
+  font-size: 14px;
 }
 
 .login {
@@ -248,9 +249,22 @@ form {
   overflow-x: scroll;
 }
 
-.eventName {
+.EventPrompt{
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 14pt;
+  font-family: 'Montserrat', sans-serif;
 
 
+}
+
+.newEvent {
+  margin-top: 30%;
+  padding-bottom: 2%;
+}
+
+.instructions {
+  margin-top: 10px;
 }
 
 .slot-false:hover{
