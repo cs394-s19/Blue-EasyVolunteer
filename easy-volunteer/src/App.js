@@ -4,6 +4,83 @@ import { Form, Button } from 'semantic-ui-react';
 import './App.css';
 import logo from './assets/logo2.svg'
 
+const MyTimesModal = ({ children }) => (
+  ReactDOM.createPortal(
+    <div className="MyTimesModal">
+      {children}
+    </div>,
+    document.getElementById('modal-root')
+  )
+);
+
+const MyTimesFunctional = ({ toggle, content }) => {
+  const [isShown, setIsShown] = useState(false);
+  const hide = () => setIsShown(false);
+  const show = () => setIsShown(true);
+
+  return (
+    <React.Fragment>
+      {toggle(show)}
+      {isShown && content(hide)}
+    </React.Fragment>
+  );
+};
+
+
+// Doesn't update on slot click
+// Time not shown yet -> use getTimeLabels
+const MyTimesButton = ({eventID, userName}) => {
+  const handleMyTimes = () => {
+    let allDaysWithShifts = [];
+    let userNameShifts = [];
+
+    let database = firebase.database();
+    let ref = database.ref('Events/' + eventID + '/Calendar/');
+    ref.once('value', (snapshot) => {
+      snapshot.forEach((child) =>  {
+        if (child.val() !== false){
+          allDaysWithShifts.push(child);
+        }
+      })
+    });
+
+    allDaysWithShifts.forEach((day) => {
+      let userNameShiftsHelper = [];
+      userNameShiftsHelper.push(day.key);
+      day.forEach((shift) => {
+        if (shift.val() === userName) {
+          userNameShiftsHelper.push(shift.key)
+          userNameShiftsHelper.push(shift.val())
+        }
+      });
+
+      if (userNameShiftsHelper.length > 1){
+        userNameShifts.push(userNameShiftsHelper);
+      }
+    });
+
+    return userNameShifts;
+  };
+
+  const myTimes = handleMyTimes();
+
+  return(
+    <div className="MyTimesContainer">  
+      <MyTimesFunctional
+        toggle = {(show) => <Button className="closeMyTimesModal" primary type='button' onClick={show}>See your shifts</Button>}
+        content = {(hide) => (
+          <MyTimesModal>
+            Here are your shifts: {
+              myTimes.map((shift) => <div className="MyTimesShifts">{shift}</div>
+            )}
+            <Button className="closeMyTimesModal" primary type='button' onClick={hide}>Close</Button>
+          </MyTimesModal>
+        )}
+      />
+    </div>
+  );
+}
+
 
 const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
 
@@ -252,30 +329,33 @@ const App = ({ match }) => {
     return (
       <center>
       <br /><br />
-      <div className="App">
-          <div className="logoDiv">
-            <img className="logo" src={logo} alt="logo" />
-          </div>
-
-          <div className="loginDiv">
-            <div className="loginFormDiv">
-                {isLogged ? <p>{name} is logged in!</p> : <p>Please log in with your first and last name.</p>}
-            <Form onSubmit={() => handleSubmit()}>
-            <Form.Group>
-              <Form.Input size='large' disabled={isLogged} onChange={(e, {value}) => setName(capitalizeWords(value))} width={8} fluid placeholder="Enter name" />
-              <Button primary type='submit' disabled={isLogged}>Login</Button>
-            </Form.Group>
-            </Form>
-
+      <div id='modal-root'>
+        <div className="App">
+            <div className="logoDiv">
+              <img className="logo" src={logo} alt="logo" />
             </div>
-          </div>
 
-          <div>
-            <Calendar userName={isLogged ? name : false} eventID={match.params.id} className="calendar" />
-          </div>
+            <div className="loginDiv">
+              <div className="loginFormDiv">
+                  {isLogged ? <p>{name} is logged in!</p> : <p>Please log in with your first and last name.</p>}
+              <Form onSubmit={() => handleSubmit()}>
+              <Form.Group>
+                <Form.Input size='large' disabled={isLogged} onChange={(e, {value}) => setName(capitalizeWords(value))} width={8} fluid placeholder="Enter name" />
+                <Button primary type='submit' disabled={isLogged}>Login</Button>
+                <MyTimesButton userName={isLogged ? name : false} eventID={match.params.id} className="MyTimesObject"/>
+              </Form.Group>
+              </Form>
 
-      <LinkInfo />
+              </div>
+            </div>
+
+            <div>
+              <Calendar userName={isLogged ? name : false} eventID={match.params.id} className="calendar" />
+            </div>
+        </div>
+        <LinkInfo />
       </div>
+
       </center>
     )
 }
