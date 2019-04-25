@@ -76,7 +76,7 @@ const EventForm = () => {
       }
       for (let ii = 0; ii < days.length; ii++) {
         let d1 = new Date(days[ii]);
-        let header = String(d1).substr(0, 10);
+        let header = String(d1).substr(0, 15);
         database.ref('Events/' + newEvent.key + '/Calendar/' + header).set(dict);
       }
     }

@@ -188,6 +188,12 @@ const Calendar = ({eventID, userName}) => {
     {
       return DaysOfWeek[day1] > DaysOfWeek[day2] ? 1 : -1;
     }
+    else
+    {
+      day1 = new Date(day1);
+      day2 = new Date(day2);
+      return day1.getTime() > day2.getTime() ? 1 : -1; 
+    }
   }
 
   const generateDayTupleArray = (calendarDict,compare=DayComparer) =>
