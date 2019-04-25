@@ -66,7 +66,7 @@ const MyTimesButton = ({eventID, userName}) => {
   const myTimes = handleMyTimes();
 
   return(
-    <div className="MyTimesContainer">  
+    <div className="MyTimesContainer">
       <MyTimesFunctional
         toggle = {(show) => <Button className="closeMyTimesModal" primary type='button' onClick={show}>See your shifts</Button>}
         content = {(hide) => (
@@ -314,13 +314,7 @@ const App = ({ match }) => {
   const [name, setName] = useState("");
   const [isLogged, toggleLogged] = useState(false);
   const handleSubmit = (value) => {
-    // Ensure that user has first and last name
-    if (name.indexOf(' ') == -1) {
-      alert('You must have a first and last name');
-    }
-    else {
       toggleLogged(true);
-    }
   }
   // Capitalize each word in name
   const capitalizeWords = (str) => {
@@ -338,7 +332,7 @@ const App = ({ match }) => {
 
             <div className="loginDiv">
               <div className="loginFormDiv">
-                  {isLogged ? <p>{name} is logged in!</p> : <p>Please log in with your first and last name.</p>}
+                  {isLogged ? <p>{name} is logged in!</p> : <p>Please log in.</p>}
               <Form onSubmit={() => handleSubmit()}>
               <Form.Group>
                 <Form.Input size='large' disabled={isLogged} onChange={(e, {value}) => setName(capitalizeWords(value))} width={8} fluid placeholder="Enter name" />
