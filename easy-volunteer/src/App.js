@@ -3,7 +3,84 @@ import { firebase } from './firebaseConfig';
 import { Form, Button } from 'semantic-ui-react';
 import './App.css';
 import logo from './assets/logo2.svg'
+import ReactDOM from 'react-dom';
 
+const MyTimesModal = ({ children }) => (
+  ReactDOM.createPortal(
+    <div className="MyTimesModal">
+      {children}
+    </div>,
+    document.getElementById('modal-root')
+  )
+);
+
+const MyTimesFunctional = ({ toggle, content }) => {
+  const [isShown, setIsShown] = useState(false);
+  const hide = () => setIsShown(false);
+  const show = () => setIsShown(true);
+
+  return (
+    <React.Fragment>
+      {toggle(show)}
+      {isShown && content(hide)}
+    </React.Fragment>
+  );
+};
+
+
+// Doesn't update on slot click
+// Time not shown yet -> use getTimeLabels
+const MyTimesButton = ({eventID, userName}) => {
+  const handleMyTimes = () => {
+    let allDaysWithShifts = [];
+    let userNameShifts = [];
+
+    let database = firebase.database();
+    let ref = database.ref('Events/' + eventID + '/Calendar/');
+    ref.once('value', (snapshot) => {
+      snapshot.forEach((child) =>  {
+        if (child.val() !== false){
+          allDaysWithShifts.push(child);
+        }
+      })
+    });
+
+    allDaysWithShifts.forEach((day) => {
+      let userNameShiftsHelper = [];
+      userNameShiftsHelper.push(day.key);
+      day.forEach((shift) => {
+        if (shift.val() === userName) {
+          userNameShiftsHelper.push(shift.key)
+          userNameShiftsHelper.push(shift.val())
+        }
+      });
+
+      if (userNameShiftsHelper.length > 1){
+        userNameShifts.push(userNameShiftsHelper);
+      }
+    });
+
+    return userNameShifts;
+  };
+
+  const myTimes = handleMyTimes();
+
+  return(
+    <div className="MyTimesContainer">  
+      <MyTimesFunctional
+        toggle = {(show) => <Button className="closeMyTimesModal" primary type='button' onClick={show}>See your shifts</Button>}
+        content = {(hide) => (
+          <MyTimesModal>
+            Here are your shifts: {
+              myTimes.map((shift) => <div className="MyTimesShifts">{shift}</div>
+            )}
+            <Button className="closeMyTimesModal" primary type='button' onClick={hide}>Close</Button>
+          </MyTimesModal>
+        )}
+      />
+    </div>
+  );
+}
 
 const Slot = ({occupyingUser, eventID, slotNum, slot_header, loggedInUser}) => {
 
@@ -56,13 +133,11 @@ const Slot = ({occupyingUser, eventID, slotNum, slot_header, loggedInUser}) => {
       console.log("setting user");
       database.ref('Events/' + eventID + '/Calendar/' + slot_header + '/slot' + slotNum).set(loggedInUser);
       setBusySetting(true);
-
       setDisplayed(loggedInUser);
     }
     else if ((loggedInUser === occupyingUser)) {
       setBusySetting(false);
       database.ref('Events/' + eventID + '/Calendar/' + slot_header + '/slot' + slotNum).set(0);
-
       setDisplayed("");
     }
     if(!loggedInUser) {
@@ -84,6 +159,7 @@ const Day = ({ids, header, eventID, loggedInUser}) => {
       header - the header for the day. used to index the day in firebase
       loggedInUser - the name of the user currently logged in the machine
   */
+
   const slots = ids.map((item, key) => <Slot slot_header={header} eventID={eventID} slotNum={key} occupyingUser={item} loggedInUser={loggedInUser}></Slot>)
   return(
     <div className="day">
@@ -150,17 +226,17 @@ const Calendar = ({eventID, userName}) => {
       });
     }, []);
 
-    const getTimeLabels = (numSlots, startTime=0.0, endTime=24.0) => {
-      const getTimeString = (n) => {
-          return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
-      }
-        let times = [numSlots];
-        for(let i = 0; i < numSlots; i++) { 
-          times[i] = (i == 0) ? (startTime) : times[i-1] + parseFloat((endTime - startTime) / numSlots);
-      }
-        return times.map(getTimeString);
+  const getTimeLabels = (numSlots, startTime=0.0, endTime=24.0) => {
+    const getTimeString = (n) => {
+      return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
     }
-    const timestampArray = getTimeLabels(calendar[0].length);
+    let times = [numSlots];
+    for(let i = 0; i < numSlots; i++) { 
+      times[i] = (i == 0) ? (startTime) : times[i-1] + parseFloat((endTime - startTime) / numSlots);
+    }
+    return times.map(getTimeString);
+  }
+  const timestampArray = getTimeLabels(calendar[0].length);
 
   return(
     <div className="calendar">
@@ -187,7 +263,6 @@ const Calendar = ({eventID, userName}) => {
       //   <div className="timestamp"> TestTimeStamp2 </div>
       // </div>
       */}
-
       {(calendar.length) > 0 ?
       calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
     }
@@ -220,10 +295,12 @@ const App = ({ match }) => {
   const [isLogged, toggleLogged] = useState(false);
   const handleSubmit = () => {
     toggleLogged(true);
-  }
-    return (
+  };
+
+  return (
       <center>
       <br /><br />
+      <div id='modal-root'>
       <div className="App">
           <div className="logoDiv">
             <img className="logo" src={logo} alt="logo" />
@@ -236,6 +313,7 @@ const App = ({ match }) => {
             <Form.Group>
               <Form.Input size='large' onChange={(e, {value}) => setName(value)} width={8} fluid placeholder="Enter name" />
               <Button primary type='submit'>Login</Button>
+              <MyTimesButton userName={isLogged ? name : false} eventID={match.params.id} className="MyTimesObject"/>
             </Form.Group>
             </Form>
 
@@ -247,6 +325,7 @@ const App = ({ match }) => {
           </div>
 
 
+      </div>
       </div>
       </center>
     )

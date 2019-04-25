@@ -259,3 +259,12 @@ form {
     max-width: 90%;
   }
 }
+
+.MyTimesModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid grey;
+}
