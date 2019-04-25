@@ -180,6 +180,7 @@ form {
   animation-timing-function: linear;
   animation-delay: none;
   animation-iteration-count: 1;
+  box-shadow: 0 0 10px rgba(0,0,0,0.55) inset;
 }
 
 @keyframes bg {
