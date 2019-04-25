@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { firebase } from './firebaseConfig';
-import { Form, Button } from 'semantic-ui-react';
+import { Form, Button, Icon } from 'semantic-ui-react';
 import './App.css';
 import logo from './assets/logo2.svg'
 
@@ -221,7 +221,7 @@ const LinkInfo = () =>
   //this button text can/should be updated
   return(
     <div className="link-info">
-      <button onClick={handleLinkInfoClick} className="link-info-text">Share Link: {URL}</button>
+      <button onClick={handleLinkInfoClick} className="link-info-text">Copy to Clipboard <Icon name='clipboard' /></button>
       <input id="link-info-hidden-box" type="text" className="link-info-hidden-box" value={URL} readOnly></input>
     </div>
   );
