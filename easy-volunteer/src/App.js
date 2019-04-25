@@ -232,17 +232,19 @@ const Calendar = ({eventID, userName}) => {
 
     }, []);
 
-    const getTimeLabels = (numSlots, startTime=0.0, endTime=24.0) => {
+    const getTimeLabels = (durationOfTime, numSlots, startTime=0.0, endTime=24.0) => {
       const getTimeString = (n) => {
           return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
       }
         let times = [numSlots];
         for(let i = 0; i < numSlots; i++) {
-          times[i] = (i == 0) ? (startTime) : times[i-1] + parseFloat((endTime - startTime) / numSlots);
+          times[i] = (i == 0) ? (startTime) : times[i-1] + durationOfTime; /*parseFloat((endTime - startTime) / numSlots)*/
       }
         return times.map(getTimeString);
     }
-    const timestampArray = getTimeLabels(calendar[0].length, start, end);
+    //this needs to be changed to get the duration of time from Firebase once it's being stored
+    const durationOfTime = parseFloat((end - start) / calendar[0].length);
+    const timestampArray = getTimeLabels(durationOfTime , calendar[0].length, start, end);
 
   return(
     <div className="calendar">
