@@ -203,10 +203,11 @@ form {
   color: black;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   outline: 1px solid black;
+
 }
 
 .slot-free:hover{
-	 box-shadow: 0 6px 28px rgba(0,0,0,0.25);
+	 box-shadow: 0 0px 20px rgba(0,0,0,0.55) inset;
 }
 
 .slot-free {
@@ -218,6 +219,7 @@ form {
   flex: 1;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   outline: 1px solid black;
+  box-shadow: 0 0 10px rgba(0,0,0,0.55) inset;
 
 }
 
