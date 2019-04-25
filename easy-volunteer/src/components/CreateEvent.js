@@ -61,7 +61,7 @@ const EventForm = () => {
       var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       var ifDay = [monday, tuesday, wednesday, thursday, friday, saturday, sunday];
       for (var ii = 0; ii < daysOfWeek.length; ii++) {
-  
+
         if (ifDay[ii]){
             database.ref('Events/' + newEvent.key + '/Calendar/' + daysOfWeek[ii]).set(dict);
         }
@@ -80,7 +80,7 @@ const EventForm = () => {
         database.ref('Events/' + newEvent.key + '/Calendar/' + header).set(dict);
       }
     }
-    
+
     window.open(`/event/${newEvent.key}`,"_self");
 
 
@@ -181,7 +181,7 @@ const EventForm = () => {
           style={marginBottomStyle}
         />
         {
-          isWeekly ? 
+          isWeekly ?
           <div>
             <Form.Checkbox onChange={(e, {checked}) => toggleMonday(checked)} name="monday" label="Monday" />
             <Form.Checkbox onChange={(e, {checked}) => toggleTuesday(checked)} name="tuesday" label="Tuesday" />
@@ -204,7 +204,7 @@ const EventForm = () => {
               label="Pick your dates"
             />
           </div>
-          
+
         }
         <TimeInput
           name="startTime"
@@ -231,7 +231,7 @@ const EventForm = () => {
           onChange={(e, {value}) => updateLength(value)}
         />
         <div className='createEventBtn'>
-          <Button type='submit'>Create Event</Button>
+          <Button primary type='submit'>Create Event</Button>
         </div>
       </Form>
       </div>
