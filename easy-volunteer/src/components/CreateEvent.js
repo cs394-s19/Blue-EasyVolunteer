@@ -8,12 +8,9 @@ import '../App.css';
 
 const EventForm = () => {
 
-  const [firstName, updateFirstName] = useState('');
-  const [lastName, updateLastName] = useState('');
-  const [orgName, updateOrgName] = useState('');
+
   const [eventName, updateEventName] = useState('');
-  const [description, updateDescription] = useState('');
-  const [isWeekly, weeklyToggle] = useState(false);
+  const [isWeekly, weeklyToggle] = useState(true);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [days, setDays] = useState([]);
@@ -33,11 +30,7 @@ const EventForm = () => {
   const handleSubmit = () => {
 
     let newEvent = database.ref('Events').push({
-      firstName: firstName,
-      lastName: lastName,
-      orgName: orgName,
       eventName: eventName,
-      description: description,
       numShifts: lengthShifts,
       startTime: convertTime(startTime),
       endTime: convertTime(endTime)
@@ -164,15 +157,12 @@ const EventForm = () => {
     <div className='App'>
       <div style={formStyle}>
       <Form onSubmit={() => handleSubmit()}>
-        <Form.Group>
-          <Form.Input onChange={(e, {value}) => updateFirstName(value)} name="firstName" width={8} fluid label='First name' placeholder='First name' />
-          <Form.Input onChange={(e, {value}) => updateLastName(value)} name="lastName" width={8} fluid label='Last name' placeholder='Last name' />
-        </Form.Group>
-        <Form.Input onChange={(e, {value}) => updateOrgName(value)} name="orgName" width={16} fluid label="Organization Name (optional)" />
+
+
         <Form.Input onChange={(e, {value}) => updateEventName(value)} name="eventName" width={16} fluid label="Event Name" />
-        <Form.TextArea onChange={(e, {value}) => updateDescription(value)} name="description" width={16} label='Event Description' placeholder='Tell us more about the event' />
+        <label class="bold">Days of the Week or Specific Dates?</label>
         <Dropdown
-          placeholder='Specific Dates'
+          placeholder='Weekly'
           fluid
           selection
           width={8}
@@ -181,7 +171,7 @@ const EventForm = () => {
           style={marginBottomStyle}
         />
         {
-          isWeekly ?
+            isWeekly ?
           <div>
             <Form.Checkbox onChange={(e, {checked}) => toggleMonday(checked)} name="monday" label="Monday" />
             <Form.Checkbox onChange={(e, {checked}) => toggleTuesday(checked)} name="tuesday" label="Tuesday" />
@@ -201,7 +191,7 @@ const EventForm = () => {
               closable={false}
               onChange={(e, {value}) => updateCalendar(value)}
               style={marginBottomStyle}
-              label="Pick your dates"
+              label="Pick Dates"
             />
           </div>
 
@@ -222,6 +212,7 @@ const EventForm = () => {
           onChange={(e, {value}) => setEndTime(value)}
           label="End Time"
         />
+        <label class="bold">Shift Duration</label>
         <Dropdown
           placeholder='Select the duration of shifts'
           fluid
@@ -229,6 +220,7 @@ const EventForm = () => {
           width={8}
           options={timeOptions}
           onChange={(e, {value}) => updateLength(value)}
+
         />
         <div className='createEventBtn'>
           <Button primary type='submit'>Create Event</Button>

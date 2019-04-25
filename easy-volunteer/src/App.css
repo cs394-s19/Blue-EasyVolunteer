@@ -298,6 +298,10 @@ form {
   }
 }
 
+.bold {
+  font-weight: bold;
+}
+
 .MyTimesModal {
   position: fixed;
   top: 50%;
