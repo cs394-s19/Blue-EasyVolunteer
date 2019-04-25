@@ -105,7 +105,11 @@ const Calendar = ({eventID, userName}) => {
 
   const DayComparer = (day1,day2) =>
   {
-    return DaysOfWeek[day1] > DaysOfWeek[day2] ? 1 : -1;
+    const DaysArray = Object.keys(DaysOfWeek)
+    if(DaysArray.includes(day1) && DaysArray.includes(day2))
+    {
+      return DaysOfWeek[day1] > DaysOfWeek[day2] ? 1 : -1;
+    }
   }
 
   const generateDayTupleArray = (calendarDict,compare=DayComparer) =>

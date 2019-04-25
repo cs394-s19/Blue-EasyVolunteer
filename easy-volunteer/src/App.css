@@ -180,7 +180,7 @@ form {
   animation-timing-function: linear;
   animation-delay: none;
   animation-iteration-count: 1;
-  box-shadow: 0 0 10px rgba(0,0,0,0.55) inset;
+  box-shadow: 0 0 5px rgba(0,0,0,0.55) inset;
 }
 
 @keyframes bg {
@@ -208,7 +208,7 @@ form {
 }
 
 .slot-free:hover{
-	 box-shadow: 0 0px 20px rgba(0,0,0,0.55) inset;
+	 box-shadow: 0 0px 10px rgba(0,0,0,0.55) inset;
 }
 
 .slot-free {
@@ -220,8 +220,7 @@ form {
   flex: 1;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   outline: 1px solid black;
-  box-shadow: 0 0 10px rgba(0,0,0,0.55) inset;
-
+  box-shadow: 0 0 5px rgba(0,0,0,0.55) inset;
 }
 
 .calendar {
