@@ -3,6 +3,7 @@ import { firebase } from './firebaseConfig';
 import { Form, Button } from 'semantic-ui-react';
 import './App.css';
 import logo from './assets/logo2.svg'
+import ReactDOM from 'react-dom';
 
 const MyTimesModal = ({ children }) => (
   ReactDOM.createPortal(
