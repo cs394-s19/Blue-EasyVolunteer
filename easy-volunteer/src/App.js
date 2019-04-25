@@ -68,7 +68,7 @@ const MyTimesButton = ({eventID, userName}) => {
   return(
     <div className="MyTimesContainer">
       <MyTimesFunctional
-        toggle = {(show) => <Button className="closeMyTimesModal" primary type='button' onClick={show}>See your shifts</Button>}
+        toggle = {(show) => <Button className="closeMyTimesModal" primary type='button' onClick={show}>See Your Shifts</Button>}
         content = {(hide) => (
           <MyTimesModal>
             Here are your shifts: {
@@ -309,7 +309,7 @@ const LinkInfo = () =>
   //this button text can/should be updated
   return(
     <div className="link-info">
-      <button onClick={handleLinkInfoClick} className="link-info-text">Copy to Clipboard <Icon name='clipboard' /></button>
+      <Button primary onClick={handleLinkInfoClick}>Copy to Clipboard  <Icon name='clipboard'/></Button>
       <input id="link-info-hidden-box" type="text" className="link-info-hidden-box" value={URL} readOnly></input>
     </div>
   );
@@ -356,9 +356,11 @@ const App = ({ match }) => {
 
             <div>
               <Calendar userName={isLogged ? name : false} eventID={match.params.id} className="calendar" />
+              <LinkInfo />
             </div>
+
         </div>
-        <LinkInfo />
+
       </div>
 
       </center>
