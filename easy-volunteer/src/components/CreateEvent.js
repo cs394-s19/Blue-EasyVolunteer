@@ -116,8 +116,8 @@ const EventForm = () => {
   ];
 
   const formStyle = {
-    marginLeft: '10%',
-    marginRight: '10%',
+    marginLeft: '2%',
+    marginRight: '2%',
     marginTop: '10%',
     padding: '40px'
   };
@@ -153,6 +153,11 @@ const EventForm = () => {
   const marginBottomStyle = {
     marginBottom: '10px'
   }
+
+  const calendarStyle = {
+    marginBottom: '50%'
+  }
+
   return (
     <div className='App'>
       <div style={formStyle}>
@@ -191,7 +196,7 @@ const EventForm = () => {
               marked={days}
               closable={false}
               onChange={(e, {value}) => updateCalendar(value)}
-              style={marginBottomStyle}
+              style={calendarStyle}
               label="Pick Dates"
             />
           </div>
