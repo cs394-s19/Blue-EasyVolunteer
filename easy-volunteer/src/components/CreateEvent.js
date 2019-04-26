@@ -184,6 +184,7 @@ const EventForm = () => {
             :
           <div>
             <DateInput
+              inline
               name="startDate"
               placeholder="Dates"
               dateFormat="MM-DD-YYYY"
