@@ -191,7 +191,7 @@ const Calendar = ({eventID, userName}) => {
     {
       day1 = new Date(day1);
       day2 = new Date(day2);
-      return day1.getTime() > day2.getTime() ? 1 : -1; 
+      return day1.getTime() > day2.getTime() ? 1 : -1;
     }
   }
 
@@ -256,6 +256,7 @@ const Calendar = ({eventID, userName}) => {
     <div className="eventName">
       <h1>{eventName}</h1>
     </div>
+      <div className="allDaysOverflow">
       <div className="allDays">
        <div className="allTimestamps">
          <div className="headerSpacer"> {/* this is to create the correct amount of spacing */}
@@ -264,6 +265,7 @@ const Calendar = ({eventID, userName}) => {
           <div className="timestamp"> {timestamp} </div>
         )}
        </div>
+
       {/* <div className="allTimestamps">
       //   <div className="header">
       //
@@ -280,6 +282,7 @@ const Calendar = ({eventID, userName}) => {
       {(calendar.length) > 0 ?
       calendar.map((day, key) => <Day loggedInUser={userName} ids={day} eventID={eventID} header={headers[key]}>></Day>) : <div></div>
     }
+    </div>
       </div>
     </div>
   );
@@ -310,7 +313,7 @@ const LinkInfo = () =>
   //this button text can/should be updated
   return(
     <div className="link-info">
-      <Button primary onClick={handleLinkInfoClick}>Copy to Clipboard  <Icon name='clipboard'/></Button>
+      <Button primary onClick={handleLinkInfoClick}>Copy Event to Clipboard  <Icon name='clipboard'/></Button>
       <input id="link-info-hidden-box" type="text" className="link-info-hidden-box" value={URL} readOnly></input>
     </div>
   );

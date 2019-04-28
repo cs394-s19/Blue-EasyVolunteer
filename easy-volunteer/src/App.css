@@ -148,6 +148,7 @@ form {
   cursor: pointer;
   width: 120px;
   padding-right: 20px;
+  padding-left: 10px;
 }
 
 .slots {
@@ -161,7 +162,8 @@ form {
 
 .header {
   font-family: 'Montserrat', sans-serif;
-  height: 5%;
+  min-height: 5%;
+  min-width: 15%;
 }
 
 .headerSpacer {
@@ -238,6 +240,7 @@ form {
 .allTimestamps {
   display: flex;
   flex-direction: column;
+  padding-left: 10px;
 }
 
 .timestamp {
@@ -254,8 +257,18 @@ form {
   flex-direction: row;
   justify-content: center;
   height: 90%;
+  width: 200%;
   padding-bottom: 20px;
+
+}
+
+.allDaysOverflow {
+  /* overflow-x: scroll; */
+
+  display: flex;
   overflow-x: scroll;
+  width: 100%;
+  height: 90%;
 }
 
 .EventPrompt{
@@ -291,7 +304,7 @@ form {
 
 @media screen and (max-width: 480px) {
   .day {
-    width: 80px;
+    width: 100px;
   }
   .App {
     max-width: 90%;
