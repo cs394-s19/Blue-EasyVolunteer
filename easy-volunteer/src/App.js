@@ -252,19 +252,20 @@ const Calendar = ({eventID, userName}) => {
     const timestampArray = getTimeLabels(durationOfTime , calendar[0].length, start, end);
 
   return(
-    <div className="calendar">
+    <div>
     <div className="eventName">
-      <h1>{eventName}</h1>
-    </div>
-      <div className="allDaysOverflow">
-      <div className="allDays">
-       <div className="allTimestamps">
+    <h1>{eventName}</h1>
+  </div>
+    <div className="calendar">
+    <div className="allTimestamps">
          <div className="headerSpacer"> {/* this is to create the correct amount of spacing */}
           </div>
         {timestampArray.map((timestamp) =>
           <div className="timestamp"> {timestamp} </div>
         )}
        </div>
+      <div className="allDaysOverflow">
+      <div className="allDays">
 
       {/* <div className="allTimestamps">
       //   <div className="header">
@@ -284,6 +285,7 @@ const Calendar = ({eventID, userName}) => {
     }
     </div>
       </div>
+    </div>
     </div>
   );
 }

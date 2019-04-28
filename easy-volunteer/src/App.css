@@ -103,7 +103,7 @@ form {
   display: block;
   margin-left: auto;
   margin-right: auto;
-
+  max-width: 700px;
 }
 
 .main-table {
@@ -233,14 +233,18 @@ form {
 }
 
 .calendar {
-
   height: 600px;
+  display: flex;
+  flex-direction: row;
+
 }
 
 .allTimestamps {
   display: flex;
+  margin-top: 20px;
   flex-direction: column;
   padding-left: 10px;
+  height: 450px;
 }
 
 .timestamp {
@@ -298,6 +302,9 @@ form {
   }
   .App {
     max-width: 90%;
+  }
+  .calendar {
+    max-width: 100%;
   }
 
 }
