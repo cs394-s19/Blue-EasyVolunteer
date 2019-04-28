@@ -335,7 +335,6 @@ const App = ({ match }) => {
     return (
       <center>
       <br /><br />
-      <div id='modal-root'>
         <div className="App">
             <div className="logoDiv">
               <img className="logo" src={logo} alt="logo" />
@@ -354,7 +353,7 @@ const App = ({ match }) => {
 
               </div>
             </div>
-
+          
             <div>
               <Calendar userName={isLogged ? name : false} eventID={match.params.id} className="calendar" />
               <LinkInfo />
@@ -362,7 +361,6 @@ const App = ({ match }) => {
 
         </div>
 
-      </div>
 
       </center>
     )
