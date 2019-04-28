@@ -28,9 +28,9 @@ const MyTimesFunctional = ({ toggle, content }) => {
 };
 
 
-// Doesn't update on slot click
-// Time not shown yet -> use getTimeLabels
+// Doesn't update on slot click + Time not shown yet -> use getTimeLabels
 const MyTimesButton = ({eventID, userName}) => {
+  let myTimes = [];
   const handleMyTimes = () => {
     let allDaysWithShifts = [];
     let userNameShifts = [];
@@ -60,15 +60,14 @@ const MyTimesButton = ({eventID, userName}) => {
       }
     });
 
+    myTimes = userNameShifts;
     return userNameShifts;
   };
-
-  const myTimes = handleMyTimes();
 
   return(
     <div className="MyTimesContainer">
       <MyTimesFunctional
-        toggle = {(show) => <Button className="closeMyTimesModal" primary type='button' onClick={show}>See Your Shifts</Button>}
+        toggle = {(show) => <Button className="closeMyTimesModal" primary type='button' onClick={function(){ show(); handleMyTimes()}}>See Your Shifts</Button>}
         content = {(hide) => (
           <MyTimesModal>
             Here are your shifts: {
