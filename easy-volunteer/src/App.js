@@ -5,6 +5,17 @@ import './App.css';
 import logo from './assets/logo2.svg'
 import ReactDOM from 'react-dom';
 
+const getTimeLabels = (durationOfTime, numSlots, startTime=0.0, endTime=24.0) => {
+  const getTimeString = (n) => {
+    return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
+  }
+  let times = [numSlots];
+  for(let i = 0; i < numSlots; i++) {
+    times[i] = (i == 0) ? (startTime) : times[i-1] + durationOfTime; /*parseFloat((endTime - startTime) / numSlots)*/
+  }
+  return times.map(getTimeString);
+}
+
 const MyTimesModal = ({ children }) => (
   ReactDOM.createPortal(
     <div className="MyTimesModal">
@@ -27,60 +38,105 @@ const MyTimesFunctional = ({ toggle, content }) => {
   );
 };
 
-
-// Doesn't update on slot click + Time not shown yet -> use getTimeLabels
-const MyTimesButton = ({eventID, userName}) => {
-  let myTimes = [];
-  const handleMyTimes = () => {
-    let allDaysWithShifts = [];
-    let userNameShifts = [];
-
-    let database = firebase.database();
-    let ref = database.ref('Events/' + eventID + '/Calendar/');
+const MyTimesButton = ({value, eventID, userName}) => {  
+  //get start and end parameters for getTimeLabels
+  let start = 0;
+  let end = 0;
+  let database = firebase.database();
+  let ref = database.ref('Events/' + eventID);
     ref.once('value', (snapshot) => {
+      start = snapshot.val()['startTime'];
+      end = snapshot.val()['endTime'];
+    });
+
+  // populate modal with user's times
+  let loginLabels = [];
+  let loginLabelsOutput = [];
+  const handleMyTimes = () => {
+    loginLabels = []; //empty array everytime
+    loginLabelsOutput = []; 
+
+    //get all day objects with slots in them
+    let validDayObjects = [];
+    let database = firebase.database();
+    let refCal = database.ref('Events/' + eventID + '/Calendar/');
+    refCal.once('value', (snapshot) => {
       snapshot.forEach((child) =>  {
-        if (child.val() !== false){
-          allDaysWithShifts.push(child);
-        }
+        if (child.val() !== false){ validDayObjects.push(child); }
       })
     });
 
-    allDaysWithShifts.forEach((day) => {
-      let userNameShiftsHelper = [];
-      userNameShiftsHelper.push(day.key);
+    //get amount of shifts parameter for getTimeLabels
+    let allShifts = [];
+    validDayObjects[0].forEach((shift) => {
+      allShifts.push(shift);
+    });
+
+    //get the user's slots
+    validDayObjects.forEach((day) => {
+      if(userName){
+        loginLabels.push(day.key);
+      }
       day.forEach((shift) => {
         if (shift.val() === userName) {
-          userNameShiftsHelper.push(shift.key)
-          userNameShiftsHelper.push(shift.val())
+          loginLabels.push(shift.key)
         }
       });
+    });
 
-      if (userNameShiftsHelper.length > 1){
-        userNameShifts.push(userNameShiftsHelper);
+    //convert slots to actual times
+    const durationOfTime = parseFloat((end - start) / allShifts.length);
+    const timestampArray = getTimeLabels(durationOfTime , allShifts.length, start, end);
+    loginLabels.forEach((item) => {
+      if(item.includes("day")){ 
+        loginLabelsOutput.push(item);
+      }
+      else{
+        let index = parseInt(item.substring(4));
+        loginLabelsOutput.push(timestampArray[index]);
       }
     });
 
-    myTimes = userNameShifts;
-    return userNameShifts;
+    // // gets rid of
+    // let check = loginLabelsOutput[loginLabelsOutput.length-1];
+    // if(check.includes("day")){ loginLabelsOutput.pop(); }
+
+    // // 
+    // for (var i = 0; i == (loginLabelsOutput.length-1); i++) {
+    //   let checkDay = loginLabelsOutput[i];
+    //   let checkDayTwo = loginLabelsOutput[i+1];
+    //   console.log(checkDay);
+    //   console.log(checkDayTwo);
+    //   if(checkDay.includes("day") && checkDayTwo.includes("day")){
+    //     loginLabelsOutput.splice(i, 1);
+    //   }
+    // }
   };
 
   return(
     <div className="MyTimesContainer">
       <MyTimesFunctional
-        toggle = {(show) => <Button className="closeMyTimesModal" primary type='button' onClick={function(){ show(); handleMyTimes()}}>See Your Shifts</Button>}
-        content = {(hide) => (
+        toggle = {(show) => 
+          <Button className="closeMyTimesModal" primary type='button' onClick={function(){ show(); handleMyTimes(); }}>
+            See Your Shifts
+          </Button>
+        }
+        
+        content = {(hide) => 
           <MyTimesModal>
-            Here are your shifts: {
-              myTimes.map((shift) => <div className="MyTimesShifts">{shift}</div>
-            )}
+            Here are your shifts: 
+            { 
+              loginLabelsOutput.map( (shift) => 
+                <div className="MyTimesShifts">{shift}</div>
+                )
+            }
             <Button className="closeMyTimesModal" primary type='button' onClick={hide}>Close</Button>
           </MyTimesModal>
-        )}
+        }
       />
     </div>
   );
 }
-
 
 const Slot = ({occupyingUser, eventID, slotNum, header, loggedInUser}) => {
 
@@ -237,16 +293,6 @@ const Calendar = ({eventID, userName}) => {
 
     }, []);
 
-    const getTimeLabels = (durationOfTime, numSlots, startTime=0.0, endTime=24.0) => {
-      const getTimeString = (n) => {
-          return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
-      }
-        let times = [numSlots];
-        for(let i = 0; i < numSlots; i++) {
-          times[i] = (i == 0) ? (startTime) : times[i-1] + durationOfTime; /*parseFloat((endTime - startTime) / numSlots)*/
-      }
-        return times.map(getTimeString);
-    }
     //this needs to be changed to get the duration of time from Firebase once it's being stored
     const durationOfTime = parseFloat((end - start) / calendar[0].length);
     const timestampArray = getTimeLabels(durationOfTime , calendar[0].length, start, end);
@@ -340,6 +386,7 @@ const App = ({ match }) => {
     return (
       <center>
       <br /><br />
+      <div id='modal-root'>
         <div className="App">
             <div className="logoDiv">
               <img className="logo" src={logo} alt="logo" />
@@ -365,8 +412,7 @@ const App = ({ match }) => {
             </div>
 
         </div>
-
-
+      </div>
       </center>
     )
 }
