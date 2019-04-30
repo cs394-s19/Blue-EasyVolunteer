@@ -1,0 +1,21 @@
+[debug] [2019-04-22T23:09:34.877Z] ----------------------------------------------------------------------
+[debug] [2019-04-22T23:09:34.880Z] Command:       /usr/local/Cellar/node/11.14.0/bin/node /Users/kenneth/.npm-packages/bin/firebase deploy
+[debug] [2019-04-22T23:09:34.880Z] CLI Version:   6.6.0
+[debug] [2019-04-22T23:09:34.880Z] Platform:      darwin
+[debug] [2019-04-22T23:09:34.880Z] Node Version:  v11.14.0
+[debug] [2019-04-22T23:09:34.881Z] Time:          Mon Apr 22 2019 18:09:34 GMT-0500 (Central Daylight Time)
+[debug] [2019-04-22T23:09:34.881Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-04-22T23:09:34.902Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-04-22T23:09:34.902Z] > authorizing via signed-in user
+[debug] [2019-04-22T23:09:34.902Z] [iam] checking project easyvolunteer-7ae3b for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2019-04-22T23:09:34.904Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2019-04-22T23:09:34.904Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2019-04-22T23:09:35.071Z] <<< HTTP RESPONSE 200
+[debug] [2019-04-22T23:09:35.090Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/easyvolunteer-7ae3b:testIamPermissions  
+
+[debug] [2019-04-22T23:09:35.292Z] <<< HTTP RESPONSE 200
+[debug] [2019-04-22T23:09:35.293Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/easyvolunteer-7ae3b  
+ 
+[debug] [2019-04-22T23:09:35.435Z] <<< HTTP RESPONSE 200
