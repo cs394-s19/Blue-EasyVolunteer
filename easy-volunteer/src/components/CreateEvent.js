@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import { DateInput, TimeInput } from 'semantic-ui-calendar-react'
 import { firebase } from '../firebaseConfig'
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import '../App.css';
 
 
@@ -33,7 +35,8 @@ const EventForm = () => {
       eventName: eventName,
       numShifts: lengthShifts,
       startTime: convertTime(startTime),
-      endTime: convertTime(endTime)
+      endTime: convertTime(endTime),
+      lengthShifts: lengthShifts
     });
     if (isWeekly) {
       database.ref('Events/' + newEvent.key + '/Calendar').set({
@@ -119,7 +122,7 @@ const EventForm = () => {
     marginLeft: '2%',
     marginRight: '2%',
     marginTop: '10%',
-    padding: '40px'
+    padding: '10px'
   };
 
   const updateCalendar = (day) => {
@@ -138,14 +141,6 @@ const EventForm = () => {
   const convertTime = (time) => {
     let hours = parseInt(time.substr(0, 2));
     let minutes = parseInt(time.substr(3, 2));
-    if (time.substr(6, 2) === "pm") {
-      if (hours !== 12)
-        hours += 12;
-    }
-    else {
-      if (hours === 12)
-        hours = 0;
-    }
     return (hours + (minutes/60));
 
   }
@@ -155,8 +150,13 @@ const EventForm = () => {
   }
 
   const calendarStyle = {
-    marginBottom: '50%'
+    marginBottom: '50%',
+    left: "0px"
   }
+  const timeStyle = {
+    margin: '10px'
+  }
+
 
   return (
     <div className='App'>
@@ -194,7 +194,7 @@ const EventForm = () => {
               placeholder="Dates"
               dateFormat="MM-DD-YYYY"
               marked={days}
-              closable={false}
+              closable={true}
               onChange={(e, {value}) => updateCalendar(value)}
               style={calendarStyle}
               label="Pick Dates"
@@ -202,22 +202,28 @@ const EventForm = () => {
           </div>
 
         }
-        <TimeInput
-          name="startTime"
-          placeholder="Start Time"
-          timeFormat="ampm"
-          value={startTime}
-          onChange={(e, {value}) => setStartTime(value)}
-          label="Start Time"
-        />
-        <TimeInput
-          name="endTime"
-          placeholder="End Time"
-          timeFormat="ampm"
-          value={endTime}
-          onChange={(e, {value}) => setEndTime(value)}
-          label="End Time"
-        />
+        <Form.Group>
+          <TextField
+            label="Start Time"
+            type="time"
+            InputLabelProps={{
+              shrink: true,
+            }} 
+            style={timeStyle}
+            onChange={(e) => setStartTime(e.target.value)}
+          />
+
+          <TextField
+            label="End Time"
+            type="time"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            style={timeStyle}
+            onChange={(e) => setEndTime(e.target.value)}
+          />
+        </Form.Group>
+        
         <label class="bold">Shift Duration</label>
         <Dropdown
           placeholder='Select the duration of shifts'
