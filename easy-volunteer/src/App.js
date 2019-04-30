@@ -6,6 +6,7 @@ import logo from './assets/logo2.svg'
 import ReactDOM from 'react-dom';
 
 const getTimeLabels = (durationOfTime, numSlots, startTime=0.0, endTime=24.0) => {
+  console.log(durationOfTime);
   const getTimeString = (n) => {
     return ((((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12)) == 0) ? "12" : "" + ((Math.trunc(n) <= 12) ? Math.trunc(n) : (Math.trunc(n) % 12))) + ":" + (((Math.round((n % 1.0) * 60)) < 10) ? ("0" + (Math.round((n % 1.0) * 60))) : (Math.round((n % 1.0) * 60))) + " " + (((Math.trunc(n) >= 12) && (Math.trunc(n) > 0)) ? "PM" : "AM");
   }
@@ -42,11 +43,13 @@ const MyTimesButton = ({value, eventID, userName}) => {
   //get start and end parameters for getTimeLabels
   let start = 0;
   let end = 0;
+  let duration = 0;
   let database = firebase.database();
   let ref = database.ref('Events/' + eventID);
     ref.once('value', (snapshot) => {
       start = snapshot.val()['startTime'];
       end = snapshot.val()['endTime'];
+      duration = snapshot.val()['lengthShifts'];
     });
 
   // populate modal with user's times
@@ -86,7 +89,7 @@ const MyTimesButton = ({value, eventID, userName}) => {
 
     //convert slots to actual times
     const durationOfTime = parseFloat((end - start) / allShifts.length);
-    const timestampArray = getTimeLabels(durationOfTime , allShifts.length, start, end);
+    const timestampArray = getTimeLabels(duration , allShifts.length, start, end);
     loginLabels.forEach((item) => {
       if(item.includes("day")){ 
         loginLabelsOutput.push(item);
@@ -232,6 +235,7 @@ const Calendar = ({eventID, userName}) => {
   const [calendar, updateCalendar] = useState([[]]);
   const [start, getStart] = useState(0);
   const [end, getEnd] = useState(0);
+  const [duration, setDuration] = useState(0);
 
 
   const DaysOfWeek = {Sunday: 0,Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6};
@@ -289,13 +293,14 @@ const Calendar = ({eventID, userName}) => {
       setEventName(snapshot.val()['eventName']);
       getStart(snapshot.val()['startTime']);
       getEnd(snapshot.val()['endTime']);
+      setDuration(snapshot.val()['lengthShifts']);
     });
 
     }, []);
 
     //this needs to be changed to get the duration of time from Firebase once it's being stored
     const durationOfTime = parseFloat((end - start) / calendar[0].length);
-    const timestampArray = getTimeLabels(durationOfTime , calendar[0].length, start, end);
+    const timestampArray = getTimeLabels(duration , calendar[0].length, start, end);
 
   return(
     <div>
