@@ -208,7 +208,7 @@ const EventForm = () => {
             type="time"
             InputLabelProps={{
               shrink: true,
-            }} 
+            }}
             style={timeStyle}
             onChange={(e) => setStartTime(e.target.value)}
           />
@@ -223,7 +223,7 @@ const EventForm = () => {
             onChange={(e) => setEndTime(e.target.value)}
           />
         </Form.Group>
-        
+
         <label class="bold">Shift Duration</label>
         <Dropdown
           placeholder='Select the duration of shifts'
